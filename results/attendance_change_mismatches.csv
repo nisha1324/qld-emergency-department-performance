@@ -1,0 +1,43 @@
+quarter,facility_code,facility_name,is_state_total,triage,attendances,attendances_year_earlier,attendances_change_pct,recomputed_pct,gap,mismatch,implied_year_earlier
+2024-03,49,Nambour,False,2,2375,2130,11,11.502,0.502,True,2140
+2024-03,49,Nambour,False,3,6507,6167,5,5.513,0.513,True,6197
+2024-03,49,Nambour,False,ALL,16816,15212,10,10.544,0.544,True,15287
+2024-03,61,Biggenden MPHS,False,3,55,67,-19,-17.91,1.09,True,68
+2024-03,63,Cherbourg,False,4,688,675,1,1.926,0.926,True,681
+2024-03,63,Cherbourg,False,5,571,607,-8,-5.931,2.069,True,621
+2024-03,63,Cherbourg,False,ALL,1701,1642,2,3.593,1.593,True,1668
+2024-03,66,Gayndah,False,5,102,130,-21,-21.538,0.538,True,129
+2024-03,74,Mundubbera MPHS,False,4,108,101,6,6.931,0.931,True,102
+2024-03,74,Mundubbera MPHS,False,ALL,201,180,11,11.667,0.667,True,181
+2024-03,103,Texas,False,3,52,44,13,18.182,5.182,True,46
+2024-03,103,Texas,False,ALL,361,325,10,11.077,1.077,True,328
+2024-03,113,Cunnamulla,False,ALL,312,476,-35,-34.454,0.546,True,480
+2024-03,118,Quilpie,False,5,42,36,20,16.667,3.333,True,35
+2024-03,118,Quilpie,False,ALL,207,145,44,42.759,1.241,True,144
+2024-03,134,Blackwater,False,2,146,143,1,2.098,1.098,True,145
+2024-03,134,Blackwater,False,4,992,646,53,53.56,0.56,True,648
+2024-03,134,Blackwater,False,ALL,1762,1380,27,27.681,0.681,True,1387
+2024-03,139,Mount Morgan,False,4,353,269,28,31.227,3.227,True,276
+2024-03,139,Mount Morgan,False,5,46,40,12,15,3,True,41
+2024-03,139,Mount Morgan,False,ALL,919,751,21,22.37,1.37,True,760
+2024-03,144,Capricorn Coast,False,3,1694,1561,8,8.52,0.52,True,1569
+2024-03,145,Woorabinda,False,3,383,356,7,7.584,0.584,True,358
+2024-03,152,Barcaldine,False,2,31,48,-37,-35.417,1.583,True,49
+2024-03,172,Mackay,False,5,572,465,25,23.011,1.989,True,458
+2024-03,173,Moranbah,False,2,154,209,-27,-26.316,0.684,True,211
+2024-03,202,Queensland Children's,False,1,80,84,-4,-4.762,0.762,True,83
+2024-03,934,Robina,False,1,102,100,6,2,4,True,96
+2024-03,934,Robina,False,2,3809,3224,19,18.145,0.855,True,3201
+2024-03,936,Gold Coast University,False,1,680,516,33,31.783,1.217,True,511
+2024-03,936,Gold Coast University,False,5,532,541,-1,-1.664,0.664,True,537
+2024-03,99999,Queensland,True,2,105020,95048,11,10.492,0.508,True,94613
+2025-12,49,Nambour,False,2,2448,2197,1.2,11.425,10.225,True,2419
+2025-12,49,Nambour,False,3,7168,6112,7.7,17.277,9.577,True,6656
+2025-12,49,Nambour,False,4,7259,5626,6.2,29.026,22.826,True,6835
+2025-12,49,Nambour,False,5,1207,875,-7.3,37.943,45.243,True,1302
+2025-12,49,Nambour,False,ALL,18115,14849,5,21.995,16.995,True,17252
+2025-12,99999,Queensland,True,2,118624,107866,9.7,9.973,0.273,True,108135
+2025-12,99999,Queensland,True,3,261808,247149,5.7,5.931,0.231,True,247690
+2025-12,99999,Queensland,True,4,181449,182927,-1.5,-0.808,0.692,True,184212
+2025-12,99999,Queensland,True,5,44083,49307,-11.4,-10.595,0.805,True,49755
+2025-12,99999,Queensland,True,ALL,611486,592827,2.7,3.147,0.447,True,595410

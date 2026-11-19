@@ -1,0 +1,9 @@
+measure,empty,of_which_no_attendances,of_which_with_attendances,quarters_affected_with_attendances
+attendances_change_pct,216,97,119,14
+seen_on_time_pct,199,199,0,0
+median_wait_min,132,132,0,0
+did_not_wait_pct,967,199,768,4
+left_after_treatment_pct,841,199,642,4
+admitted_pct,327,199,128,4
+admitted_within_4h_pct,735,199,536,14
+stay_within_4h_pct,212,199,13,4
