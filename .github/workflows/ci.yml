@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  reports-and-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements-lock.txt
+
+      # The lock file pins the versions the committed outputs were made with,
+      # so the snapshot, report, CSVs and charts can be compared byte for byte.
+      - name: Install dependencies
+        run: pip install -r requirements-lock.txt
+
+      # Rebuild the snapshot from the committed raw files and rerun the report
+      # (no download). Fail and show the difference if any committed file changes.
+      - name: Rebuild snapshot and report, check nothing changed
+        run: |
+          python scripts/build_snapshot.py
+          python scripts/profile_source.py
+          git status --porcelain
+          test -z "$(git status --porcelain)" || { git diff --stat; git diff -- "*.md" "*.csv" "*.json" | head -200; exit 1; }
+
+      - name: pytest
+        run: pytest -q
