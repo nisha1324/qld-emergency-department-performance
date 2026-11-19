@@ -1,0 +1,213 @@
+facility_code,raw_name,first_quarter,last_quarter,quarters
+1,Mater Hospital Brisbane Public,2023-03,2024-03,5
+1,Mater Adult,2024-06,2025-09,6
+1,Mater Brisbane,2025-12,2026-06,3
+4,The Prince Charles Hospital,2023-03,2024-03,5
+4,Prince Charles,2024-06,2026-06,9
+11,Princess Alexandra Hospital,2023-03,2024-03,5
+11,Princess Alexandra,2024-06,2026-06,9
+15,Ipswich Hospital,2023-03,2024-03,5
+15,Ipswich,2024-06,2026-06,9
+16,Redcliffe Hospital,2023-03,2024-03,5
+16,Redcliffe,2024-06,2026-06,9
+22,Queen Elizabeth II Jubilee Hospital,2023-03,2024-03,5
+22,Queen Elizabeth II,2024-06,2026-06,9
+28,Redland Hospital,2023-03,2024-03,5
+28,Redland,2024-06,2026-06,9
+29,Logan Hospital,2023-03,2024-03,5
+29,Logan,2024-06,2026-06,9
+30,Caboolture Hospital,2023-03,2024-03,5
+30,Caboolture,2024-06,2026-06,9
+32,Sunshine Coast University Hospital,2023-03,2024-03,5
+32,Sunshine Coast University,2024-06,2026-06,9
+35,Mater Springfield,2026-06,2026-06,1
+41,Beaudesert Hospital,2023-03,2024-03,5
+41,Beaudesert,2024-06,2026-06,9
+42,Boonah Hospital,2023-03,2024-03,5
+42,Boonah,2024-06,2026-06,9
+43,Caloundra Hospital,2023-03,2024-03,5
+43,Caloundra,2024-06,2026-06,9
+44,Esk Hospital,2023-03,2024-03,5
+44,Esk,2024-06,2026-06,9
+45,Gatton Hospital,2023-03,2024-03,5
+45,Gatton,2024-06,2026-06,9
+46,Kilcoy Hospital,2023-03,2024-03,5
+46,Kilcoy,2024-06,2026-06,9
+47,Laidley Hospital,2023-03,2024-03,5
+47,Laidley,2024-06,2026-06,9
+48,Maleny Hospital,2023-03,2024-03,5
+48,Maleny,2024-06,2026-06,9
+49,Nambour Hospital,2023-03,2024-03,5
+49,Nambour,2024-06,2026-06,9
+61,Biggenden Hospital,2023-03,2024-03,5
+61,Biggenden MPHS,2024-06,2026-06,9
+62,Bundaberg Hospital,2023-03,2024-03,5
+62,Bundaberg,2024-06,2026-06,9
+63,Cherbourg Hospital,2023-03,2024-03,5
+63,Cherbourg,2024-06,2026-06,9
+64,Childers Hospital,2023-03,2024-03,5
+64,Childers,2024-06,2026-06,9
+65,Eidsvold Hospital,2023-03,2024-03,5
+65,Eidsvold MPHS,2024-06,2026-06,9
+66,Gayndah Hospital,2023-03,2024-03,5
+66,Gayndah,2024-06,2026-06,9
+67,Gin Gin Hospital,2023-03,2024-03,5
+67,Gin Gin,2024-06,2026-06,9
+68,Gympie Hospital,2023-03,2024-03,5
+68,Gympie,2024-06,2026-06,9
+69,Hervey Bay Hospital,2023-03,2024-03,5
+69,Hervey Bay,2024-06,2026-06,9
+70,Kingaroy Hospital,2023-03,2024-03,5
+70,Kingaroy,2024-06,2026-06,9
+71,Maryborough Hospital,2023-03,2024-03,5
+71,Maryborough,2024-06,2026-06,9
+72,Monto Hospital,2023-03,2024-03,5
+72,Monto,2024-06,2026-06,9
+74,Mundubbera Hospital,2023-03,2024-03,5
+74,Mundubbera MPHS,2024-06,2026-06,9
+75,Murgon Hospital,2023-03,2024-03,5
+75,Murgon,2024-06,2026-06,9
+76,Nanango Hospital,2023-03,2024-03,5
+76,Nanango,2024-06,2026-06,9
+91,Chinchilla Hospital,2023-03,2024-03,5
+91,Chinchilla,2024-06,2026-06,9
+92,Dalby Hospital,2023-03,2024-03,5
+92,Dalby,2024-06,2026-06,9
+93,Goondiwindi Hospital,2023-03,2024-03,5
+93,Goondiwindi,2024-06,2026-06,9
+95,Jandowae Hospital,2023-03,2024-03,5
+95,Jandowae,2024-06,2026-06,9
+97,Miles Hospital,2023-03,2024-03,5
+97,Miles,2024-06,2026-06,9
+98,Millmerran Hospital,2023-03,2024-03,5
+98,Millmerran,2024-06,2026-06,9
+99,Oakey Hospital,2023-03,2024-03,5
+99,Oakey,2024-06,2026-06,9
+100,Stanthorpe Hospital,2023-03,2024-03,5
+100,Stanthorpe,2024-06,2026-06,9
+101,Tara Hospital,2023-03,2024-03,5
+101,Tara,2024-06,2026-06,9
+102,Taroom Hospital,2023-03,2024-03,5
+102,Taroom,2024-06,2026-06,9
+103,Texas Hospital,2023-03,2024-03,5
+103,Texas,2024-06,2026-06,9
+104,Toowoomba Hospital,2023-03,2024-03,5
+104,Toowoomba,2024-06,2026-06,9
+105,Warwick Hospital,2023-03,2024-03,5
+105,Warwick,2024-06,2026-06,9
+106,Wandoan Hospital,2023-03,2024-03,5
+106,Wandoan,2024-06,2026-06,9
+112,Charleville Hospital,2023-03,2024-03,5
+112,Charleville,2024-06,2026-06,9
+113,Cunnamulla Hospital,2023-03,2024-03,5
+113,Cunnamulla,2024-06,2026-06,9
+114,Dirranbandi Hospital,2023-03,2024-03,5
+114,Dirranbandi,2024-06,2026-06,9
+116,Mitchell Hospital,2023-03,2024-03,5
+116,Mitchell,2024-06,2026-06,9
+117,Mungindi Hospital,2023-03,2024-03,5
+117,Mungindi,2024-06,2026-06,9
+118,Quilpie Hospital,2023-03,2024-03,5
+118,Quilpie,2024-06,2026-06,9
+119,Roma Hospital,2023-03,2024-03,5
+119,Roma,2024-06,2026-06,9
+120,St George Hospital,2023-03,2024-03,5
+120,St George,2024-06,2026-06,9
+121,Surat Hospital,2023-03,2024-03,5
+121,Surat,2024-06,2026-06,9
+133,Biloela Hospital,2023-03,2024-03,5
+133,Biloela,2024-06,2026-06,9
+134,Blackwater Hospital,2023-03,2024-03,5
+134,Blackwater,2024-06,2026-06,9
+135,Emerald Hospital,2023-03,2024-03,5
+135,Emerald,2024-06,2026-06,9
+136,Gladstone Hospital,2023-03,2024-03,5
+136,Gladstone,2024-06,2026-06,9
+139,Mount Morgan Hospital,2023-03,2024-03,5
+139,Mount Morgan,2024-06,2026-06,9
+140,Moura Hospital,2023-03,2024-03,5
+140,Moura,2024-06,2026-06,9
+141,Rockhampton Hospital,2023-03,2024-03,5
+141,Rockhampton,2024-06,2026-06,9
+142,Springsure Hospital,2023-03,2024-03,5
+142,Springsure,2024-06,2026-06,9
+144,Capricorn Coast Hospital,2023-03,2024-03,5
+144,Capricorn Coast,2024-06,2026-06,9
+145,Woorabinda Hospital,2023-03,2024-03,5
+145,Woorabinda,2024-06,2026-06,9
+152,Barcaldine Hospital,2023-03,2024-03,5
+152,Barcaldine,2024-06,2026-06,9
+153,Blackall Hospital,2023-03,2024-03,5
+153,Blackall,2024-06,2026-06,9
+156,Longreach Hospital,2023-03,2024-03,5
+156,Longreach,2024-06,2026-06,9
+159,Winton Hospital,2023-03,2024-03,5
+159,Winton,2024-06,2026-06,9
+171,Clermont Hospital,2023-03,2024-03,5
+171,Clermont MPHS,2024-06,2026-06,9
+172,Mackay Base Hospital,2023-03,2024-03,5
+172,Mackay,2024-06,2026-06,9
+173,Moranbah Hospital,2023-03,2024-03,5
+173,Moranbah,2024-06,2026-06,9
+174,Proserpine Hospital,2023-03,2024-03,5
+174,Proserpine,2024-06,2026-06,9
+175,Sarina Hospital,2023-03,2024-03,5
+175,Sarina,2024-06,2026-06,9
+176,Dysart Hospital,2023-03,2024-03,5
+176,Dysart,2024-06,2026-06,9
+191,Ayr Hospital,2023-03,2024-03,5
+191,Ayr,2024-06,2026-06,9
+192,Bowen Hospital,2023-03,2024-03,5
+192,Bowen,2024-06,2026-06,9
+193,Charters Towers Hospital,2023-03,2024-03,5
+193,Charters Towers,2024-06,2026-06,9
+196,Ingham Hospital,2023-03,2024-03,5
+196,Ingham,2024-06,2026-06,9
+197,Joyce Palmer Health Service,2023-03,2024-03,5
+197,Joyce Palmer HS,2024-06,2026-06,9
+200,Townsville University Hospital,2023-03,2024-03,5
+200,Townsville,2024-06,2026-06,9
+201,Royal Brisbane & Women's Hospital,2023-03,2024-03,5
+201,Royal Brisbane & Women's,2024-06,2026-06,9
+202,Queensland Children's Hospital,2023-03,2024-03,5
+202,Queensland Children's,2024-06,2026-06,9
+211,Atherton Hospital,2023-03,2024-03,5
+211,Atherton,2024-06,2026-06,9
+212,Babinda Hospital,2023-03,2024-03,5
+212,Babinda,2024-06,2026-06,9
+213,Bamaga Hospital,2023-03,2024-03,5
+213,Bamaga,2024-06,2026-06,9
+214,Cairns Hospital,2023-03,2024-03,5
+214,Cairns,2024-06,2026-06,9
+216,Cooktown Hospital,2023-03,2024-03,5
+216,Cooktown,2024-06,2026-06,9
+222,Innisfail Hospital,2023-03,2024-03,5
+222,Innisfail,2024-06,2026-06,9
+223,Mareeba Hospital,2023-03,2024-03,5
+223,Mareeba,2024-06,2026-06,9
+224,Mossman Hospital,2023-03,2024-03,5
+224,Mossman,2024-06,2026-06,9
+226,Thursday Island Hospital,2023-03,2024-03,5
+226,Thursday Island,2024-06,2026-06,9
+227,Tully Hospital,2023-03,2024-03,5
+227,Tully,2024-06,2026-06,9
+228,Weipa Hospital,2023-03,2024-03,5
+228,Weipa,2024-06,2026-06,9
+243,Cloncurry Hospital,2023-03,2024-03,5
+243,Cloncurry MPHS,2024-06,2026-06,9
+245,Julia Creek Hospital,2023-03,2024-03,5
+245,Julia Creek MPHS,2024-06,2026-06,9
+246,Mount Isa Base Hospital,2023-03,2024-03,5
+246,Mount Isa,2024-06,2026-06,9
+247,Normanton Hospital,2023-03,2024-03,5
+247,Normanton,2024-06,2026-06,9
+249,Mornington Island Hospital,2023-03,2024-03,5
+249,Mornington Island,2024-06,2026-06,9
+252,Doomadgee Hospital,2023-03,2024-03,5
+252,Doomadgee,2024-06,2026-06,9
+934,Robina Hospital,2023-03,2024-03,5
+934,Robina,2024-06,2026-06,9
+936,Gold Coast University Hospital,2023-03,2024-03,5
+936,Gold Coast University,2024-06,2026-06,9
+99999,QUEENSLAND,2023-03,2023-03,1
+99999,Queensland,2023-06,2026-06,13

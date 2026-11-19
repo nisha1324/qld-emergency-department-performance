@@ -1,0 +1,34 @@
+{
+  "source": "https://www.data.qld.gov.au/dataset/emergency-departments-quarterly-data",
+  "licence": "CC BY 4.0, Queensland Health",
+  "quarters": [
+    "2023-03",
+    "2026-06"
+  ],
+  "inputs": {
+    "ed_2023-03.json": "7c43aec4e4c5cf16704b2f4a062bb339fc011e4d868de658e5553712692e4036",
+    "ed_2023-06.json": "c443194856f93284f34b335bf7d78fed746322bbd7c26d31d0e2eef0e833302e",
+    "ed_2023-09.json": "56d0d06e6c64ca20c8888dc9be64a2e9f5abff97a7deb9e641cc9b08a6ee221e",
+    "ed_2023-12.json": "c74ea99995dcbac0e6ed0fd1ce16ab484f56f49a17370f71cea9200cddcc6641",
+    "ed_2024-03.json": "23f5a3fa6a5ffac3ba3100c79d7925902fd4990b6a71e828005fa7be10bb84c0",
+    "ed_2024-06.json": "0b2bd6a5976a62474ba456c2a8a972d1d902a4a11b9c2d39ada42fa96bd70ff5",
+    "ed_2024-09.json": "71d70dea19ec31a165ca878e7fc4b54304e042c173b96af4f13b444e5f997ec0",
+    "ed_2024-12.json": "d624f37b1f8390cb9da97c70792199edf9a86ce077a468d658a0e4af7738d933",
+    "ed_2025-03.json": "4d0d927a27aa9ddcdd1153c825492fd49e60348dd6c77a6441ec021131b94f4c",
+    "ed_2025-06.json": "51226e0b8af6725c6ecffcb65dc7ef99955c55526a6904be71f2310419c1914d",
+    "ed_2025-09.json": "0a0fa2615d0e640ee565c43cad6a9f564dc74deb03636e5e8f936a171d65c6ca",
+    "ed_2025-12.json": "575b0c37ac3638de349cba22996ff4bccc7f426673102c88829da49cb8f5507b",
+    "ed_2026-03.json": "9a696a68e362074e7151dec88dce071e48e884c52f9a4af8ef97b058ffd7b4da",
+    "ed_2026-06.json": "1b77c654edd814615e2293b911c94fcfc2ca7925c876e490d5beb0f510b9fcda"
+  },
+  "outputs": {
+    "ed_quarterly.csv": {
+      "sha256": "d931501f634ea389463fed79afe45985beae1ec126e3b5db087ffb95bcaad9db",
+      "rows": 8826
+    },
+    "facility_names.csv": {
+      "sha256": "316de4c9dd6174aa4373e17f6fff6106a8a9b63b216374e05491663a97d7351e",
+      "rows": 212
+    }
+  }
+}
