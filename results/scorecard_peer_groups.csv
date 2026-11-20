@@ -1,0 +1,4 @@
+peer_group,hospitals,with_both_quarters,attendances,attendance_share,pooled_rate_1,median_standardised,min_standardised,max_standardised,pooled_change,pooled_mix,pooled_within,slipping,improving,no_clear_change,below_peers,above_peers
+large,22,22,416132,70.1531,45.689,44.3031,29.4945,68.2689,-3.4715,-0.5993,-2.8722,16,4,2,6,6
+medium,26,25,120704,20.3487,75.7476,77.5,59.9427,99.0349,-1.7761,-1.5068,-0.2693,10,5,10,7,7
+small,57,57,56341,9.4982,91.1069,92.6736,80.1875,100,-1.1615,-0.4557,-0.7058,9,3,45,13,15
