@@ -1,6 +1,8 @@
 # Queensland emergency department performance
 
-**Status: work in progress.** Part 1 of 5 (source, snapshot and profile) is done.
+[![CI](https://github.com/nisha1324/qld-emergency-department-performance/actions/workflows/ci.yml/badge.svg)](https://github.com/nisha1324/qld-emergency-department-performance/actions/workflows/ci.yml)
+
+**Status: work in progress.** Parts 1 and 2 of 5 are done: the source profile, and the split between patient mix and performance.
 
 Where do patients wait in Queensland's public hospital emergency departments (EDs), and which hospitals miss the 4-hour mark? This project treats the state's published ED figures the way an operations analyst would treat a service-level report: check the data first, then find where the delays are, how much is down to the mix of patients, and which hospitals to look at.
 
@@ -68,6 +70,36 @@ Mostly yes, with quirks the loader handles and the later parts must respect.
 
 The profile ends with eight rules for the rest of the project, for example: use facility codes, compare the same quarter a year apart, and never average hospitals to describe the state (the plain average of hospital 4-hour figures is 79.2%, against 56.1% for the state).
 
+## Part 2: mix versus performance
+
+Full report: [`results/MIX_VS_PERFORMANCE.md`](results/MIX_VS_PERFORMANCE.md).
+
+An all-categories rate can fall for two reasons: more patients arrive in the triage categories where stays are longer (**mix**), or patients in the same category get a worse result (**within category**). The change between two quarters splits exactly into the two, with nothing left over. The main comparison is Apr-Jun 2024 to Apr-Jun 2026, the longest same-quarter span published to one decimal place.
+
+| Queensland, Apr-Jun 2024 to Apr-Jun 2026 | Change (points) | Mix | Within category |
+| --- | ---: | ---: | ---: |
+| ED stay within 4 hours | −3.05 | −1.14 | −1.91 |
+| Admitted patients: ED stay within 4 hours | −3.10 | −0.06 | −3.04 |
+| Seen within the recommended time | +1.30 | −0.48 | +1.78 |
+
+**1. A more urgent mix is 37% of the fall in 4-hour stays. The other 63% is within category.** The 4-hour rate fell in all five triage categories. Mix lowered the rate in 10 of 10 year-on-year comparisons, and its pull is growing. With the triage mix held at its Jan-Mar 2023 level, the Apr-Jun 2026 figure would be 57.8% instead of 56.1%.
+
+![Actual against fixed mix](results/charts/04_fixed_mix.png)
+
+**2. The front door improved by more than the headline shows.** Patients seen on time rose 1.30 points, but the mix pulled that down by 0.48: within categories the gain was 1.78 points. It is not a steady gain; the within-category effect was negative in 3 of 10 year-on-year comparisons.
+
+![Mix and within-category effects](results/charts/05_mix_vs_within.png)
+
+**3. Patients who are not admitted are leaving later too.** A second split, into admitted and not admitted, does not rely on triage. Admitted patients' 4-hour rate fell from 34.5% to 31.3%. The rate for everyone else is not published, but the published figures imply 68.7% falling to 66.2%, and because those patients are 71% of attendances they account for 1.78 of the 3.0 points, against 0.91 for admitted patients. That corrects Part 1's "back door" reading: the delay is not only among admitted patients.
+
+**4. At the large hospitals the fall is mostly within category; at the other hospitals it is mostly mix.** At the 22 large hospitals the 4-hour rate fell 3.47 points and 83% of that is within category. At the other 82 it fell 1.43 points and 80% of that is mix. Among the 22, 18 fell (9 of them by 5 points or more, led by Sunshine Coast University, 49.8% to 41.4%) and 4 rose (Queensland Children's most, 63.2% to 70.8%).
+
+![Large hospitals](results/charts/06_large_hospitals.png)
+
+**A caution on the mix.** Category 2 grew from 17.9% to 20.0% of attendances while a smaller share of its patients were admitted (50.6% to 47.6%). That fits a change in how patients are triaged as well as it fits sicker patients, and quarterly totals cannot tell the two apart. The triage split puts mix at 37% of the fall and the admitted split puts it at 10%.
+
+**So what?** "Patients are sicker" does not explain most of the fall in 4-hour stays, on either split. A health service should report within-category rates next to the headline, because the headline understates the gain in patients seen on time and overstates the loss in 4-hour stays. And it should look at its large hospitals one at a time: over the same two years two lost about 8 points and one gained more than 7, which a state average hides.
+
 ## How to run
 
 ```bash
@@ -75,6 +107,7 @@ python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 
 python scripts/profile_source.py     # Part 1 report, CSVs and charts from the committed snapshot
+python scripts/mix_report.py         # Part 2 report, CSVs and charts
 pytest                               # tests
 
 # optional: rebuild from the source
@@ -88,19 +121,20 @@ python scripts/build_snapshot.py     # data/raw/*.json -> data/ed_quarterly.csv
 edperf/source.py          where the data comes from; pinned hashes; API fetch
 edperf/load.py            raw quarterly files -> one tidy table
 edperf/profile.py         measures behind the source profile
-scripts/                  download, snapshot build, Part 1 report
+edperf/mix.py             mix versus within-category split
+scripts/                  download, snapshot build, Part 1 and Part 2 reports
 data/raw/                 14 raw quarterly files as returned by the API
 data/ed_quarterly.csv     tidy snapshot: hospital x quarter x triage category
 data/facility_names.csv   every spelling each facility code has had
-results/                  SOURCE_PROFILE.md, CSVs, charts
-tests/                    loader, measures, report regeneration, README figures
+results/                  SOURCE_PROFILE.md, MIX_VS_PERFORMANCE.md, CSVs, charts
+tests/                    loader, measures, the split on hand-made numbers, report regeneration, README figures
 ```
 
 ## Roadmap
 
 1. ~~Source, snapshot and profile~~
-2. Mix versus performance: how much of the fall in 4-hour stays is a more urgent mix, and how much is each triage category getting slower
-3. Hospital scorecard: peer groups by size, which hospitals are improving or slipping, and by how much
+2. ~~Mix versus performance: how much of the fall in 4-hour stays is a more urgent mix, and how much is each triage category getting slower~~
+3. Hospital scorecard: peer groups by size, which hospitals are improving or slipping within category, and by how much
 4. Front door versus back door: waits, walk-outs and admitted-patient delays by hospital
 5. Star-schema export for Power BI, CI and the final write-up with recommendations
 
@@ -108,6 +142,9 @@ tests/                    loader, measures, report regeneration, README figures
 
 - Aggregated data: quarterly percentages and medians per hospital, with no patient-level records, times of day or diagnoses.
 - "Admissions to hospital within 4 hours" is the source's column name. It is read here as the share of admitted patients whose ED stay was within 4 hours; the portal's definitions file could not be downloaded from the machine this was built on.
+- Triage category is the only measure of how sick patients are. A change in triage practice looks the same as a change in patients, so the mix effect in Part 2 is an estimate, not a fact about patients.
+- The 4-hour rate of patients who were not admitted is implied by three published figures, not published itself.
+- "Seen within the recommended time" does not rebuild exactly from its five categories (the rebuilt figure is about 0.3 points higher), so Part 2 uses its changes, not its levels.
 - The 10,000-attendance line between "large" and other hospitals is a working threshold for Part 1, not an official peer group.
 - No official targets are applied yet. Part 3 will add them once they are confirmed from a Queensland Health source.
 

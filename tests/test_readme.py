@@ -21,13 +21,23 @@ def report(root) -> str:
     return (root / "results" / "SOURCE_PROFILE.md").read_text(encoding="utf-8")
 
 
+@pytest.fixture(scope="module")
+def mix_report(root) -> str:
+    return (root / "results" / "MIX_VS_PERFORMANCE.md").read_text(encoding="utf-8")
+
+
 def results_section(readme: str) -> str:
     start = readme.index("## Part 1")
+    return readme[start:readme.index("## Part 2")]
+
+
+def part2_section(readme: str) -> str:
+    start = readme.index("## Part 2")
     return readme[start:readme.index("## How to run")]
 
 
 def tokens(text: str) -> set[str]:
-    return {t.lstrip("+") for t in NUMBER.findall(text)}
+    return {t.lstrip("+").rstrip(",") for t in NUMBER.findall(text)}
 
 
 def test_every_result_figure_is_in_the_report(readme, report):
@@ -68,9 +78,68 @@ def test_readme_statement_is_backed_by_the_report(readme, report, readme_phrase,
     assert report_phrase in report
 
 
+def test_every_part2_figure_is_in_the_mix_report(readme, mix_report):
+    have = tokens(mix_report)
+    missing = sorted(t for t in tokens(part2_section(readme)) if t not in have and t not in {"2"})
+    assert not missing, f"README figures not found in MIX_VS_PERFORMANCE.md: {missing}"
+
+
+@pytest.mark.parametrize("readme_phrase, report_phrase", [
+    ("| ED stay within 4 hours | −3.05 | −1.14 | −1.91 |", "| ED stay within 4 hours | 59.1% | 56.1% | −3.05 | −1.14 | −1.91 |"),
+    ("| Admitted patients: ED stay within 4 hours | −3.10 | −0.06 | −3.04 |",
+     "| Admitted patients: ED stay within 4 hours | 34.4% | 31.3% | −3.10 | −0.06 | −3.04 |"),
+    ("| Seen within the recommended time | +1.30 | −0.48 | +1.78 |",
+     "| Seen within the recommended time | 73.6% | 74.9% | +1.30 | −0.48 | +1.78 |"),
+    ("Apr-Jun 2024 to Apr-Jun 2026, the longest same-quarter span published to one decimal place",
+     "**Apr-Jun 2024 to Apr-Jun 2026**: the same quarter two years apart, and the longest like-for-like span"),
+    ("A more urgent mix is 37% of the fall in 4-hour stays", "**1.14 points (37%) is mix**"),
+    ("The other 63% is within category", "**1.91 points (63%) is within category**"),
+    ("The 4-hour rate fell in all five triage categories", "the 4-hour rate fell in all five categories"),
+    ("Mix lowered the rate in 10 of 10 year-on-year comparisons, and its pull is growing",
+     "Mix lowered the rate in 10 of 10 comparisons, and the pull is growing"),
+    ("held at its Jan-Mar 2023 level, the Apr-Jun 2026 figure would be 57.8% instead of 56.1%",
+     "hold each category's share at its Jan-Mar 2023 level and apply each quarter's own category rates. "
+     "On that fixed mix the Apr-Jun 2026 figure would be 57.8% instead of 56.1%"),
+    ("Patients seen on time rose 1.30 points, but the mix pulled that down by 0.48: within categories the gain was 1.78 points",
+     "The rate rose 1.30 points, but the mix pulled it down by 0.48; within categories the gain was 1.78 points"),
+    ("the within-category effect was negative in 3 of 10 year-on-year comparisons",
+     "the within-category effect was negative in 3 of 10 year-on-year comparisons"),
+    ("Admitted patients' 4-hour rate fell from 34.5% to 31.3%", "| Admitted | 28.1% | 29.0% | 34.5% | 31.3% |"),
+    ("the published figures imply 68.7% falling to 66.2%", "| Not admitted | 71.9% | 71.0% | 68.7% | 66.2% |"),
+    ("because those patients are 71% of attendances they account for 1.78 of the 3.0 points, against 0.91 for admitted patients",
+     "1.78 points against 0.91. Their rate fell less (68.7% to 66.2%, against 34.5% to 31.3%), but they are 71% of attendances"),
+    ("At the 22 large hospitals the 4-hour rate fell 3.47 points and 83% of that is within category",
+     "At the **22 large hospitals** the 4-hour rate fell 3.47 points and 2.87 of that (83%) is within category"),
+    ("At the other 82 it fell 1.43 points and 80% of that is mix",
+     "At the **other 82** it fell 1.43 points and 1.14 of that (80%) is mix"),
+    ("Among the 22, 18 fell (9 of them by 5 points or more, led by Sunshine Coast University, 49.8% to 41.4%)",
+     "**18 of 22 fell and 4 rose.** 9 fell by 5 points or more, led by Sunshine Coast University (49.8% to 41.4%)"),
+    ("and 4 rose (Queensland Children's most, 63.2% to 70.8%)", "Queensland Children's improved the most (63.2% to 70.8%)"),
+    ("Category 2 grew from 17.9% to 20.0% of attendances while a smaller share of its patients were admitted (50.6% to 47.6%)",
+     "Category 2 grew from 17.9% to 20.0% of attendances while a smaller share of its patients were admitted (50.6% to 47.6%)"),
+    ("The triage split puts mix at 37% of the fall and the admitted split puts it at 10%",
+     "The two splits put mix at 10% and 37% of the fall"),
+    ("two lost about 8 points", "| Sunshine Coast University | 24,756 | 49.8% | 41.4% | −8.3 |"),
+    ("two lost about 8 points", "| Queen Elizabeth II | 14,971 | 45.3% | 37.3% | −8.0 |"),
+    ("one gained more than 7", "| Queensland Children's | 17,413 | 63.2% | 70.8% | +7.6 |"),
+    ("the rebuilt figure is about 0.3 points higher", "the rebuilt figure is 0.26 to 0.37 points above the published one"),
+])
+def test_part2_statement_is_backed_by_the_mix_report(readme, mix_report, readme_phrase, report_phrase):
+    assert readme_phrase in readme
+    assert report_phrase in mix_report
+
+
+def test_part2_extremes_among_large_hospitals(root):
+    """'two lost about 8 points and one gained more than 7': no other large hospital did."""
+    import pandas as pd
+    h = pd.read_csv(root / "results" / "mix_large_hospitals.csv")
+    assert int((h["change"] <= -7.75).sum()) == 2 and int((h["change"] > 7).sum()) == 1
+    assert h["change"].min() > -8.5
+
+
 def test_readme_charts_exist(readme, root):
     charts = re.findall(r"\]\((results/charts/[^)]+)\)", readme)
-    assert len(charts) == 3
+    assert len(charts) == 6
     for c in charts:
         assert (root / c).is_file(), c
 
