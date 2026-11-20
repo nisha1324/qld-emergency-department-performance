@@ -33,6 +33,11 @@ def results_section(readme: str) -> str:
 
 def part2_section(readme: str) -> str:
     start = readme.index("## Part 2")
+    return readme[start:readme.index("## Part 3")]
+
+
+def part3_section(readme: str) -> str:
+    start = readme.index("## Part 3")
     return readme[start:readme.index("## How to run")]
 
 
@@ -137,9 +142,71 @@ def test_part2_extremes_among_large_hospitals(root):
     assert h["change"].min() > -8.5
 
 
+@pytest.fixture(scope="module")
+def scorecard_report(root) -> str:
+    return (root / "results" / "HOSPITAL_SCORECARD.md").read_text(encoding="utf-8")
+
+
+def test_every_part3_figure_is_in_the_scorecard_report(readme, scorecard_report):
+    have = tokens(scorecard_report)
+    missing = sorted(t for t in tokens(part3_section(readme)) if t not in have and t not in {"3"})
+    assert not missing, f"README figures not found in HOSPITAL_SCORECARD.md: {missing}"
+
+
+@pytest.mark.parametrize("readme_phrase, report_phrase", [
+    ("| Large (10,000 or more) | 22 | 44.3% | 16 | 2 | 4 |", "| Large | 22 | 16 | 2 | 4 | ±1.3 |"),
+    ("| Large (10,000 or more) | 22 | 44.3% |", "| Large (10,000 or more) | 22 | 70.2% | 45.7% | 44.3% |"),
+    ("| Medium (2,500 to 9,999) | 26 | 77.5% | 10 | 10 | 5 |", "| Medium | 25 | 10 | 10 | 5 | ±2.1 |"),
+    ("| Medium (2,500 to 9,999) | 26 | 77.5% |", "| Medium (2,500 to 9,999) | 26 | 20.3% | 75.7% | 77.5% |"),
+    ("| Small (under 2,500) | 57 | 92.7% | 9 | 45 | 3 |", "| Small | 57 | 9 | 45 | 3 | ±2.9 |"),
+    ("| Small (under 2,500) | 57 | 92.7% |", "| Small (under 2,500) | 57 | 9.5% | 91.1% | 92.7% |"),
+    ("Mater Springfield, first reports in Apr-Jun 2026 and has a level but no trend",
+     "Mater Springfield first reports in Apr-Jun 2026, so it has a level but no trend"),
+    ("\"Below peers\" means the lowest quarter of the group", "is in the lowest quarter of its group"),
+    ("from Apr-Jun 2024 to Apr-Jun 2026", "**Trend: the within-category change**, Apr-Jun 2024 to Apr-Jun 2026"),
+    ("a **chance bar** of ±2.58 standard errors", "Each change is compared with ±2.58 standard errors"),
+    ("35 of 104 hospitals slipped by more than chance, and 12 improved",
+     "**35 of 104 hospitals slipped by more than chance and 12 improved.**"),
+    ("Slipping is the norm among large hospitals: 16 of 22", "**Slipping is the norm among large hospitals**: 16 of 22"),
+    ("roughly 14,800 more stays over 4 hours in the quarter than their Apr-Jun 2024 category rates would give",
+     "at the 16 slipping large hospitals the within-category falls add up to roughly 14,800 more stays over 4 hours in the "
+     "quarter than their Apr-Jun 2024 category rates would give"),
+    ("Queen Elizabeth II fell the most within category (−8.2 points) and Queensland Children's gained the most (+9.0)",
+     "**Queen Elizabeth II** has the largest within-category fall (−8.2 points) and **Queensland Children's** the largest gain (+9.0)"),
+    ("On the published figure 74 of 104 hospitals fell", "On the published all-categories figure, 74 of 104 fell"),
+    ("45 of 57 small hospitals show no change that chance could not produce", "45 of 57 small hospitals show no clear change"),
+    ("about ±2.9 points, against ±1.3 for a large one", "A small hospital's bar is about ±2.9 points, against ±1.3 for a large one"),
+    ("12 hospitals are below their peers and slipping (5 large, 2 medium, 5 small)", "These 12 (5 large, 2 medium, 5 small)"),
+    ("Another 8 are in the top quarter of their group and slipping",
+     "8 hospitals are in the top quarter of their group and slipping"),
+    ("And 3 are in the lowest quarter and improving: Caboolture, Gympie and Kingaroy",
+     "3 are in the lowest quarter and improving: Caboolture, Gympie, Kingaroy"),
+    ("Of the 12 improving on 4-hour stays, 11 are also improving on patients seen on time and none is slipping",
+     "Of the 12 improving on 4-hour stays, 11 are also improving on seeing patients on time and none is slipping"),
+    ("of the 35 slipping on 4-hour stays, 7 are improving on patients seen on time",
+     "Of the 35 hospitals slipping on 4-hour stays, 16 are also slipping on seeing patients on time and 7 are *improving* on it"),
+    ("the state figure of 56.1% puts 20 of the 22 large hospitals below it and all 57 small hospitals above it",
+     "Against the state figure of 56.1%, 20 of the 22 large hospitals are below and all 57 small hospitals are above"),
+])
+def test_part3_statement_is_backed_by_the_scorecard_report(readme, scorecard_report, readme_phrase, report_phrase):
+    assert readme_phrase in part3_section(readme)
+    assert report_phrase in scorecard_report
+
+
+def test_part3_large_priority_hospitals_named_in_readme(readme, root):
+    """The five large hospitals the README names are exactly the large rows of the priority CSV."""
+    import pandas as pd
+    pri = pd.read_csv(root / "results" / "scorecard_priority.csv")
+    large = list(pri.loc[pri["peer_group"] == "large", "facility_name"])
+    assert len(pri) == 12 and len(large) == 5
+    sentence = "the five large ones are Queen Elizabeth II, Hervey Bay, Bundaberg, Royal Brisbane & Women's and Princess Alexandra"
+    assert sentence in readme
+    assert all(name in sentence for name in large)
+
+
 def test_readme_charts_exist(readme, root):
     charts = re.findall(r"\]\((results/charts/[^)]+)\)", readme)
-    assert len(charts) == 6
+    assert len(charts) == 9
     for c in charts:
         assert (root / c).is_file(), c
 

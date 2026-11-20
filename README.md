@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/nisha1324/qld-emergency-department-performance/actions/workflows/ci.yml/badge.svg)](https://github.com/nisha1324/qld-emergency-department-performance/actions/workflows/ci.yml)
 
-**Status: work in progress.** Parts 1 and 2 of 5 are done: the source profile, and the split between patient mix and performance.
+**Status: work in progress.** Parts 1 to 3 of 5 are done: the source profile, the split between patient mix and performance, and the hospital scorecard.
 
 Where do patients wait in Queensland's public hospital emergency departments (EDs), and which hospitals miss the 4-hour mark? This project treats the state's published ED figures the way an operations analyst would treat a service-level report: check the data first, then find where the delays are, how much is down to the mix of patients, and which hospitals to look at.
 
@@ -100,6 +100,39 @@ An all-categories rate can fall for two reasons: more patients arrive in the tri
 
 **So what?** "Patients are sicker" does not explain most of the fall in 4-hour stays, on either split. A health service should report within-category rates next to the headline, because the headline understates the gain in patients seen on time and overstates the loss in 4-hour stays. And it should look at its large hospitals one at a time: over the same two years two lost about 8 points and one gained more than 7, which a state average hides.
 
+## Part 3: hospital scorecard
+
+Full report: [`results/HOSPITAL_SCORECARD.md`](results/HOSPITAL_SCORECARD.md). Every hospital's row: [`results/scorecard_hospitals.csv`](results/scorecard_hospitals.csv).
+
+Each hospital gets two separate verdicts, both against hospitals of a similar size:
+
+- **Level.** Its 4-hour rate recalculated on its peer group's triage mix (the "same-mix rate"), so a hospital is not marked down for having more urgent patients. "Below peers" means the lowest quarter of the group.
+- **Trend.** Its within-category change from Apr-Jun 2024 to Apr-Jun 2026, counted as slipping or improving only if it is outside a **chance bar** of ±2.58 standard errors. A rate built from a few hundred patients moves by luck alone, and the bar is how far.
+
+| Peer group (attendances a quarter) | Hospitals | Median same-mix rate | Slipping | No clear change | Improving |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Large (10,000 or more) | 22 | 44.3% | 16 | 2 | 4 |
+| Medium (2,500 to 9,999) | 26 | 77.5% | 10 | 10 | 5 |
+| Small (under 2,500) | 57 | 92.7% | 9 | 45 | 3 |
+
+One medium hospital, Mater Springfield, first reports in Apr-Jun 2026 and has a level but no trend.
+
+**1. 35 of 104 hospitals slipped by more than chance, and 12 improved.** Slipping is the norm among large hospitals: 16 of 22. At those 16 the falls add up to roughly 14,800 more stays over 4 hours in the quarter than their Apr-Jun 2024 category rates would give. Queen Elizabeth II fell the most within category (−8.2 points) and Queensland Children's gained the most (+9.0).
+
+![Large hospitals against the chance bar](results/charts/07_large_hospital_trend.png)
+
+**2. Most of the movement at small hospitals is noise.** On the published figure 74 of 104 hospitals fell, but 45 of 57 small hospitals show no change that chance could not produce. A small hospital's chance bar is about ±2.9 points, against ±1.3 for a large one.
+
+![Trend by peer group](results/charts/09_trend_by_group.png)
+
+**3. Where a hospital stands and which way it is moving are different questions.** 12 hospitals are below their peers and slipping (5 large, 2 medium, 5 small); the five large ones are Queen Elizabeth II, Hervey Bay, Bundaberg, Royal Brisbane & Women's and Princess Alexandra. Another 8 are in the top quarter of their group and slipping, which a league table of levels would not show. And 3 are in the lowest quarter and improving: Caboolture, Gympie and Kingaroy.
+
+![Level against trend](results/charts/08_level_vs_trend.png)
+
+**4. No hospital improved its 4-hour rate while its front door got worse.** Of the 12 improving on 4-hour stays, 11 are also improving on patients seen on time and none is slipping. The reverse does not hold: of the 35 slipping on 4-hour stays, 7 are improving on patients seen on time.
+
+**So what?** A performance report needs two columns per hospital, not one. Comparing everyone with the state figure of 56.1% puts 20 of the 22 large hospitals below it and all 57 small hospitals above it, which says nothing about any of them. Against peers, a health service has a short list to start with (12 below peers and slipping), a second list that a ranking would miss (8 high but slipping), and a reason not to react to most small-hospital swings. The scorecard shows where to look, not why: the chance bar is a floor, and peer medians are not targets.
+
 ## How to run
 
 ```bash
@@ -108,6 +141,7 @@ pip install -r requirements.txt
 
 python scripts/profile_source.py     # Part 1 report, CSVs and charts from the committed snapshot
 python scripts/mix_report.py         # Part 2 report, CSVs and charts
+python scripts/scorecard_report.py   # Part 3 report, CSVs and charts
 pytest                               # tests
 
 # optional: rebuild from the source
@@ -122,19 +156,20 @@ edperf/source.py          where the data comes from; pinned hashes; API fetch
 edperf/load.py            raw quarterly files -> one tidy table
 edperf/profile.py         measures behind the source profile
 edperf/mix.py             mix versus within-category split
-scripts/                  download, snapshot build, Part 1 and Part 2 reports
+edperf/scorecard.py       peer groups, same-mix rates, chance bars, level and trend verdicts
+scripts/                  download, snapshot build, Part 1 to Part 3 reports
 data/raw/                 14 raw quarterly files as returned by the API
 data/ed_quarterly.csv     tidy snapshot: hospital x quarter x triage category
 data/facility_names.csv   every spelling each facility code has had
-results/                  SOURCE_PROFILE.md, MIX_VS_PERFORMANCE.md, CSVs, charts
-tests/                    loader, measures, the split on hand-made numbers, report regeneration, README figures
+results/                  SOURCE_PROFILE.md, MIX_VS_PERFORMANCE.md, HOSPITAL_SCORECARD.md, CSVs, charts
+tests/                    loader, measures, the split and the scorecard on hand-made numbers, report regeneration, README figures
 ```
 
 ## Roadmap
 
 1. ~~Source, snapshot and profile~~
 2. ~~Mix versus performance: how much of the fall in 4-hour stays is a more urgent mix, and how much is each triage category getting slower~~
-3. Hospital scorecard: peer groups by size, which hospitals are improving or slipping within category, and by how much
+3. ~~Hospital scorecard: peer groups by size, which hospitals are improving or slipping within category, and by how much~~
 4. Front door versus back door: waits, walk-outs and admitted-patient delays by hospital
 5. Star-schema export for Power BI, CI and the final write-up with recommendations
 
@@ -145,8 +180,10 @@ tests/                    loader, measures, the split on hand-made numbers, repo
 - Triage category is the only measure of how sick patients are. A change in triage practice looks the same as a change in patients, so the mix effect in Part 2 is an estimate, not a fact about patients.
 - The 4-hour rate of patients who were not admitted is implied by three published figures, not published itself.
 - "Seen within the recommended time" does not rebuild exactly from its five categories (the rebuilt figure is about 0.3 points higher), so Part 2 uses its changes, not its levels.
-- The 10,000-attendance line between "large" and other hospitals is a working threshold for Part 1, not an official peer group.
-- No official targets are applied yet. Part 3 will add them once they are confirmed from a Queensland Health source.
+- The three size groups (cut at 2,500 and 10,000 attendances a quarter) are working groups for this analysis, not Queensland Health's official peer groups. A hospital near a cut-off could be scored differently in the next group.
+- No official targets are applied. Queensland Health's targets could not be confirmed from a primary source on the machine this was built on, so Part 3 scores hospitals against the median of their peer group, which describes what similar hospitals do and is not a standard of care.
+- The chance bar in Part 3 treats patients as independent. Stays in a crowded ED are not, so the true noise is probably larger and a flag means "worth a look", not proof. The bar is narrowest, and least reliable, at the smallest hospitals.
+- Part 3's trend compares two quarters two years apart. It does not say what happened in between, beyond the one-year split in the report.
 
 ## Attribution
 
