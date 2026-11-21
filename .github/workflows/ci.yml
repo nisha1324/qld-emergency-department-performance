@@ -32,7 +32,8 @@ jobs:
         run: pip install -r requirements-lock.txt
 
       # Rebuild the snapshot from the committed raw files and rerun the reports
-      # (no download). Fail and show the difference if any committed file changes.
+      # and the Power BI export (no download). Fail and show the difference if
+      # any committed file changes, including the Parquet files.
       - name: Rebuild snapshot and reports, check nothing changed
         run: |
           python scripts/build_snapshot.py
@@ -40,6 +41,8 @@ jobs:
           python scripts/mix_report.py
           python scripts/scorecard_report.py
           python scripts/doors_report.py
+          python scripts/export_powerbi.py
+          python scripts/powerbi_checks.py
           git status --porcelain
           test -z "$(git status --porcelain)" || { git diff --stat; git diff -- "*.md" "*.csv" "*.json" | head -200; exit 1; }
 
