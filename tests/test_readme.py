@@ -43,6 +43,11 @@ def part3_section(readme: str) -> str:
 
 def part4_section(readme: str) -> str:
     start = readme.index("## Part 4")
+    return readme[start:readme.index("## Part 5")]
+
+
+def part5_section(readme: str) -> str:
+    start = readme.index("## Part 5")
     return readme[start:readme.index("## How to run")]
 
 
@@ -273,6 +278,82 @@ def test_part4_limitation_about_zero_waits(root):
     h = pd.read_csv(root / "results" / "doors_hospitals.csv")
     assert len(h) == 104 and int((h["median_wait_0"] <= 1).sum()) == 36
     assert 0.3 < 36 / 104 < 0.37
+
+
+# ---- Part 5: the Power BI model ---------------------------------------------
+
+@pytest.fixture(scope="module")
+def checks_md(root) -> str:
+    return (root / "powerbi" / "CHECKS.md").read_text(encoding="utf-8")
+
+
+def test_every_part5_figure_is_in_the_check_values_or_the_manifest(readme, checks_md, root):
+    import json
+    manifest = json.loads((root / "powerbi" / "data" / "MANIFEST.json").read_text())["tables"]
+    have = tokens(checks_md) | {f"{t['rows']:,}" for t in manifest.values()}
+    # part numbers, and counts tied to their sources in the tests below
+    allowed = {"1", "2", "3", "4", "5", "27", "8", "79.2%", "16", "22", "12", "9"}
+    missing = sorted(t for t in tokens(part5_section(readme)) if t not in have and t not in allowed)
+    assert not missing, f"README Part 5 figures not found in CHECKS.md or MANIFEST.json: {missing}"
+
+
+@pytest.mark.parametrize("readme_phrase, checks_phrase", [
+    ("to within 0.1 points in all 937 hospital-quarters published to one decimal place",
+     "| one decimal place | 937 | 0.09 | 937 (within 0.1) |"),
+    ("to within 1.0 in all 520 published as whole numbers", "| whole numbers | 520 | 0.83 | 520 (within 1.0) |"),
+    ("the model gives 56.12% in Apr-Jun 2026 against the published 56.1%",
+     "| Apr-Jun 2026 | 105 | 593,177 | 56.12% | 56.1% |"),
+    ("In 83 hospital-quarters a category's admitted share is blank while the hospital's total is published",
+     "In 83 hospital-quarters that happens while the all-categories share is published"),
+    ("Reading the blank as zero rebuilds the published total in 83 of 83", "| zero (used by the model) | 83 of 83 |"),
+    ("dropping the row does so in 62 of 83", "| no data: drop the row | 62 of 83 |"),
+    ("At Cunnamulla in Oct-Dec 2023 the model gives 7.85% (published: 8%); dropping the blank rows would give 11.37%",
+     "| Cunnamulla | 407 | 7.85% | 11.37% | 8% |"),
+    ("16 of 22 large hospitals slipping", "| Large (10,000 or more) | 22 | 16 | 2 | 4 | 5 | 0 |"),
+])
+def test_part5_statement_is_backed_by_the_check_values(readme, checks_md, readme_phrase, checks_phrase):
+    assert readme_phrase in part5_section(readme)
+    assert checks_phrase in checks_md
+
+
+def test_part5_counts_match_the_pack(readme, root):
+    import json
+    import pandas as pd
+    section = part5_section(readme)
+    dax = (root / "powerbi" / "measures.dax").read_text(encoding="utf-8")
+    assert f"{len(re.findall(r'^    MEASURE ', dax, re.M))} DAX measures" in section
+    assert f"{len(re.findall(r'^EVALUATE', dax, re.M))} check queries" in section
+    manifest = json.loads((root / "powerbi" / "data" / "MANIFEST.json").read_text())["tables"]
+    for table in ("fct_ed_triage_quarter", "fct_hospital_quarter_published", "hospital_scorecard",
+                  "state_published_quarter"):
+        assert f"| `{table}` | {manifest[table]['rows']:,} |" in section
+    dims = ", ".join(str(manifest[t]["rows"]) for t in ("dim_hospital", "dim_quarter", "dim_triage"))
+    assert f"| `dim_hospital`, `dim_quarter`, `dim_triage` | {dims} |" in section
+    card = pd.read_csv(root / "results" / "scorecard_hospitals.csv")
+    doors = pd.read_csv(root / "results" / "doors_hospitals.csv")
+    assert ((card["level"] == "below peers") & (card["trend"] == "slipping")).sum() == 12
+    assert "12 hospitals below peers and slipping" in section
+    assert int(doors["wait_step"].sum()) == 9 and "the 9 hospitals whose median wait stepped up" in section
+
+
+def test_part5_diagram_is_the_guides_diagram(readme, root):
+    guide = (root / "powerbi" / "POWERBI_GUIDE.md").read_text(encoding="utf-8")
+    block = re.search(r"```mermaid\n(.*?)```", part5_section(readme), re.S).group(1)
+    assert block in guide
+
+
+def test_part5_average_trap_and_blank_limitation(readme, snapshot):
+    latest = snapshot[(snapshot["quarter"] == snapshot["quarter"].max()) & (snapshot["triage"] == "ALL")]
+    plain = latest.loc[~latest["is_state_total"], "stay_within_4h_pct"].mean()
+    state = latest.loc[latest["is_state_total"], "stay_within_4h_pct"].iloc[0]
+    assert f"the plain average of hospital 4-hour figures is {plain:.1f}% for a state at {state:.1f}%" \
+        in part5_section(readme)
+    # limitation: "13 category rows (24 patients) with a blank 4-hour rate"
+    h = snapshot[~snapshot["is_state_total"] & (snapshot["triage"] != "ALL") & (snapshot["attendances"] > 0)]
+    blank = h[h["stay_within_4h_pct"].isna()]
+    assert (len(blank), int(blank["attendances"].sum())) == (13, 24)
+    assert set(blank["quarter"]) == {"2023-06", "2023-09", "2023-12", "2024-03"}
+    assert "including 13 category rows (24 patients) with a blank 4-hour rate" in readme
 
 
 def test_readme_charts_exist(readme, root):

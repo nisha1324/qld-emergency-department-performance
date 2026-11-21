@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/nisha1324/qld-emergency-department-performance/actions/workflows/ci.yml/badge.svg)](https://github.com/nisha1324/qld-emergency-department-performance/actions/workflows/ci.yml)
 
-**Status: work in progress.** Parts 1 to 4 of 5 are done: the source profile, the split between patient mix and performance, the hospital scorecard, and front door versus back door.
+**Status: work in progress.** The analysis (Parts 1 to 4) and the Power BI model (Part 5) are done. The final write-up with recommendations is still to come.
 
 Where do patients wait in Queensland's public hospital emergency departments (EDs), and which hospitals miss the 4-hour mark? This project treats the state's published ED figures the way an operations analyst would treat a service-level report: check the data first, then find where the delays are, how much is down to the mix of patients, and which hospitals to look at.
 
@@ -164,6 +164,45 @@ The not-admitted stream's 4-hour rate is not published. It is implied by three p
 
 **So what?** A hospital executive deciding where to spend should not assume the answer is inpatient beds. Of the 35 hospitals slipping on 4-hour stays, 32 are slipping among patients who were not admitted and 23 among admitted patients. The stream says who to talk to first: bed managers where only the admitted stream slips, the ED's own tests, reviews and discharge decisions where only the not-admitted stream slips, and crowding where both do. It says where the time is lost, not why.
 
+## Part 5: a model for Power BI
+
+Build guide: [`powerbi/POWERBI_GUIDE.md`](powerbi/POWERBI_GUIDE.md). Check values: [`powerbi/CHECKS.md`](powerbi/CHECKS.md). The SQL: [`sql/star_schema.sql`](sql/star_schema.sql).
+
+Parts 1 to 4 are fixed reports. A hospital executive will want to pick their own hospital, peer group or triage category, and that is a job for a BI tool. The catch is that the source publishes **percentages**, and a BI tool that averages percentages gets the wrong answer: the plain average of hospital 4-hour figures is 79.2% for a state at 56.1%.
+
+So the model is a star schema, built in DuckDB SQL, whose fact table turns each published percentage back into a head count (attendances × rate). Every rate in the report is then a sum of counts divided by a sum of attendances, and it stays right under any filter.
+
+```mermaid
+erDiagram
+    dim_hospital ||--o{ fct_ed_triage_quarter          : hospital_key
+    dim_quarter  ||--o{ fct_ed_triage_quarter          : quarter_key
+    dim_triage   ||--o{ fct_ed_triage_quarter          : triage_key
+    dim_hospital ||--o{ fct_hospital_quarter_published : hospital_key
+    dim_quarter  ||--o{ fct_hospital_quarter_published : quarter_key
+    dim_hospital ||--|| hospital_scorecard             : hospital_key
+    dim_quarter  ||--|| state_published_quarter        : quarter_key
+```
+
+| Table | Rows | What it holds |
+| --- | ---: | --- |
+| `fct_ed_triage_quarter` | 7,285 | Hospital × quarter × triage category: attendances, walk-outs, and head counts for seen on time, 4-hour stays, admissions and the two streams |
+| `fct_hospital_quarter_published` | 1,457 | The published all-categories row per hospital and quarter (the median wait lives here: a median cannot be added up) |
+| `dim_hospital`, `dim_quarter`, `dim_triage` | 105, 14, 5 | Peer group; financial year and the two comparison quarters; triage names and recommended waits |
+| `hospital_scorecard` | 105 | Level, trend and stream verdicts from Parts 3 and 4, carried as columns, not recalculated |
+| `state_published_quarter` | 14 | The Queensland row as published, to show next to the model's figure |
+
+The pack also has 27 DAX measures and 8 check queries with the values they should return.
+
+**1. The model rebuilds the published figures.** Adding a hospital's five categories back up gives its published 4-hour figure to within 0.1 points in all 937 hospital-quarters published to one decimal place, and to within 1.0 in all 520 published as whole numbers. For the state, the model gives 56.12% in Apr-Jun 2026 against the published 56.1%.
+
+**2. In four quarters a blank is a zero, and treating it as "no data" gives the wrong admitted share.** Apr-Jun 2023 to Jan-Mar 2024 publish a zero as `-`. In 83 hospital-quarters a category's admitted share is blank while the hospital's total is published. Reading the blank as zero rebuilds the published total in 83 of 83; dropping the row does so in 62 of 83. At Cunnamulla in Oct-Dec 2023 the model gives 7.85% (published: 8%); dropping the blank rows would give 11.37%.
+
+**3. The verdicts travel with the model, with their caveats.** The scorecard's level and trend, the four effects and the stream verdicts are columns, so the report counts them (16 of 22 large hospitals slipping, 12 hospitals below peers and slipping) and does not redo a chance test in DAX. The not-admitted rate is labelled "implied" in its measure name, and the 9 hospitals whose median wait stepped up carry a `wait_step` flag.
+
+**So what?** The analysis can now be handed to someone who does not run Python. A health-service analyst can open the report, filter to their own hospital and get the same numbers as this README, and the two easiest mistakes with this data (averaging percentages, and reading a `-` as missing) are designed out of the model instead of being left to each report author.
+
+**Not done yet:** the DAX has not been run in Power BI, which needs Windows. Its logic is mirrored in SQL and tested here; the 8 check queries are how the first build confirms it.
+
 ## How to run
 
 ```bash
@@ -174,6 +213,8 @@ python scripts/profile_source.py     # Part 1 report, CSVs and charts from the c
 python scripts/mix_report.py         # Part 2 report, CSVs and charts
 python scripts/scorecard_report.py   # Part 3 report, CSVs and charts
 python scripts/doors_report.py       # Part 4 report, CSVs and charts
+python scripts/export_powerbi.py     # Part 5: star schema -> powerbi/data/*.parquet
+python scripts/powerbi_checks.py     # Part 5: powerbi/CHECKS.md
 pytest                               # tests
 
 # optional: rebuild from the source
@@ -190,12 +231,15 @@ edperf/profile.py         measures behind the source profile
 edperf/mix.py             mix versus within-category split
 edperf/scorecard.py       peer groups, same-mix rates, chance bars, level and trend verdicts
 edperf/doors.py           admitted and not-admitted streams, four-way split, walk-outs
-scripts/                  download, snapshot build, Part 1 to Part 4 reports
+edperf/star.py            builds the star schema in DuckDB, checks it against the snapshot, writes Parquet
+sql/star_schema.sql       the star schema: 2 facts, 3 dimensions, scorecard, published state row
+powerbi/                  Parquet files, MANIFEST.json, measures.dax, CHECKS.md, POWERBI_GUIDE.md
+scripts/                  download, snapshot build, Part 1 to Part 4 reports, Power BI export and check values
 data/raw/                 14 raw quarterly files as returned by the API
 data/ed_quarterly.csv     tidy snapshot: hospital x quarter x triage category
 data/facility_names.csv   every spelling each facility code has had
 results/                  SOURCE_PROFILE.md, MIX_VS_PERFORMANCE.md, HOSPITAL_SCORECARD.md, FRONT_VS_BACK_DOOR.md, CSVs, charts
-tests/                    loader, measures, the splits and the scorecard on hand-made numbers, report regeneration, README figures
+tests/                    loader, measures, the splits, the scorecard and the star schema on hand-made numbers, report regeneration, README figures
 ```
 
 ## Roadmap
@@ -204,7 +248,8 @@ tests/                    loader, measures, the splits and the scorecard on hand
 2. ~~Mix versus performance: how much of the fall in 4-hour stays is a more urgent mix, and how much is each triage category getting slower~~
 3. ~~Hospital scorecard: peer groups by size, which hospitals are improving or slipping within category, and by how much~~
 4. ~~Front door versus back door: waits, walk-outs and admitted-patient delays by hospital~~
-5. Star-schema export for Power BI, CI and the final write-up with recommendations
+5. ~~Star-schema export for Power BI: DuckDB SQL, Parquet, DAX measures, check values and a build guide~~
+6. Final write-up with recommendations
 
 ## Limitations
 
@@ -214,6 +259,8 @@ tests/                    loader, measures, the splits and the scorecard on hand
 - The 4-hour rate of patients who were not admitted is implied by three published figures, not published itself. Part 4's chance bar for that stream does not include the rounding of those figures; the report shows which verdicts would not survive the worst case.
 - Part 4's streams say where the time is lost, not why. Admitted patients waiting in the ED for a bed can slow everyone else, and quarterly totals cannot separate that from a separate problem among patients who go home.
 - A median wait of 0 or 1 minute, published by about a third of hospitals, may reflect how the start of treatment is recorded. Front-door changes at hospitals where it jumped are flagged, not explained.
+- The Power BI model reads a blank percentage as zero in the four quarters that publish a zero as `-`. The evidence is for the admitted share (Part 5). The same reading is applied to the other rates in those quarters, including 13 category rows (24 patients) with a blank 4-hour rate.
+- The DAX measures have not been run in Power BI. The Power BI model's rates come from rounded category percentages, so they match the published figures to rounding, not exactly.
 - "Seen within the recommended time" does not rebuild exactly from its five categories (the rebuilt figure is about 0.3 points higher), so Part 2 uses its changes, not its levels.
 - The three size groups (cut at 2,500 and 10,000 attendances a quarter) are working groups for this analysis, not Queensland Health's official peer groups. A hospital near a cut-off could be scored differently in the next group.
 - No official targets are applied. Queensland Health's targets could not be confirmed from a primary source on the machine this was built on, so Part 3 scores hospitals against the median of their peer group, which describes what similar hospitals do and is not a standard of care.
