@@ -39,6 +39,7 @@ jobs:
           python scripts/profile_source.py
           python scripts/mix_report.py
           python scripts/scorecard_report.py
+          python scripts/doors_report.py
           git status --porcelain
           test -z "$(git status --porcelain)" || { git diff --stat; git diff -- "*.md" "*.csv" "*.json" | head -200; exit 1; }
 
