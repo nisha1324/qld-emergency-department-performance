@@ -1,0 +1,602 @@
+{
+  "source": "data/ed_quarterly.csv, results/scorecard_hospitals.csv, results/doors_hospitals.csv",
+  "built_by": "sql/star_schema.sql (DuckDB)",
+  "comparison": {
+    "start": "2024-06",
+    "latest": "2026-06"
+  },
+  "tables": {
+    "fct_ed_triage_quarter": {
+      "rows": 7285,
+      "columns": [
+        {
+          "name": "ed_row_id",
+          "type": "BIGINT",
+          "nulls": 0,
+          "sum": 1474744520133005
+        },
+        {
+          "name": "quarter_key",
+          "type": "INTEGER",
+          "nulls": 0,
+          "sum": 1474744510
+        },
+        {
+          "name": "hospital_key",
+          "type": "INTEGER",
+          "nulls": 0,
+          "sum": 1011115
+        },
+        {
+          "name": "triage_key",
+          "type": "INTEGER",
+          "nulls": 0,
+          "sum": 21855
+        },
+        {
+          "name": "attendances",
+          "type": "INTEGER",
+          "nulls": 0,
+          "sum": 8278441
+        },
+        {
+          "name": "did_not_wait",
+          "type": "INTEGER",
+          "nulls": 0,
+          "sum": 268648
+        },
+        {
+          "name": "left_after_treatment",
+          "type": "INTEGER",
+          "nulls": 0,
+          "sum": 400902
+        },
+        {
+          "name": "seen_on_time",
+          "type": "DOUBLE",
+          "nulls": 0,
+          "sum": 6082551.235
+        },
+        {
+          "name": "seen_on_time_base",
+          "type": "DOUBLE",
+          "nulls": 0,
+          "sum": 8278441.0
+        },
+        {
+          "name": "stays_within_4h",
+          "type": "DOUBLE",
+          "nulls": 0,
+          "sum": 4882485.683
+        },
+        {
+          "name": "stays_4h_base",
+          "type": "DOUBLE",
+          "nulls": 0,
+          "sum": 8278441.0
+        },
+        {
+          "name": "admitted",
+          "type": "DOUBLE",
+          "nulls": 0,
+          "sum": 2355737.122
+        },
+        {
+          "name": "admitted_base",
+          "type": "DOUBLE",
+          "nulls": 0,
+          "sum": 8278441.0
+        },
+        {
+          "name": "stream_admitted",
+          "type": "DOUBLE",
+          "nulls": 0,
+          "sum": 2355737.122
+        },
+        {
+          "name": "stream_admitted_within_4h",
+          "type": "DOUBLE",
+          "nulls": 0,
+          "sum": 815191.2661
+        },
+        {
+          "name": "stream_not_admitted",
+          "type": "DOUBLE",
+          "nulls": 0,
+          "sum": 5922703.878
+        },
+        {
+          "name": "stream_not_admitted_within_4h",
+          "type": "DOUBLE",
+          "nulls": 0,
+          "sum": 4067294.4169
+        },
+        {
+          "name": "seen_on_time_pct_published",
+          "type": "DOUBLE",
+          "nulls": 199,
+          "sum": 634750.3
+        },
+        {
+          "name": "stay_within_4h_pct_published",
+          "type": "DOUBLE",
+          "nulls": 212,
+          "sum": 548405.5
+        },
+        {
+          "name": "admitted_pct_published",
+          "type": "DOUBLE",
+          "nulls": 322,
+          "sum": 170964.2
+        },
+        {
+          "name": "admitted_within_4h_pct_published",
+          "type": "DOUBLE",
+          "nulls": 712,
+          "sum": 427781.4
+        },
+        {
+          "name": "median_wait_min_published",
+          "type": "DOUBLE",
+          "nulls": 132,
+          "sum": 61863.0
+        }
+      ]
+    },
+    "fct_hospital_quarter_published": {
+      "rows": 1457,
+      "columns": [
+        {
+          "name": "hospital_quarter_id",
+          "type": "BIGINT",
+          "nulls": 0,
+          "sum": 29494890402223
+        },
+        {
+          "name": "quarter_key",
+          "type": "INTEGER",
+          "nulls": 0,
+          "sum": 294948902
+        },
+        {
+          "name": "hospital_key",
+          "type": "INTEGER",
+          "nulls": 0,
+          "sum": 202223
+        },
+        {
+          "name": "attendances_published",
+          "type": "INTEGER",
+          "nulls": 0,
+          "sum": 8278441
+        },
+        {
+          "name": "median_wait_min",
+          "type": "DOUBLE",
+          "nulls": 0,
+          "sum": 14550.0
+        },
+        {
+          "name": "seen_on_time_pct",
+          "type": "DOUBLE",
+          "nulls": 0,
+          "sum": 125165.7
+        },
+        {
+          "name": "stay_within_4h_pct",
+          "type": "DOUBLE",
+          "nulls": 0,
+          "sum": 117947.1
+        },
+        {
+          "name": "admitted_pct",
+          "type": "DOUBLE",
+          "nulls": 5,
+          "sum": 24957.0
+        },
+        {
+          "name": "admitted_within_4h_pct",
+          "type": "DOUBLE",
+          "nulls": 23,
+          "sum": 92149.7
+        }
+      ]
+    },
+    "dim_hospital": {
+      "rows": 105,
+      "columns": [
+        {
+          "name": "hospital_key",
+          "type": "INTEGER",
+          "nulls": 0,
+          "sum": 14477
+        },
+        {
+          "name": "hospital_name",
+          "type": "VARCHAR",
+          "nulls": 0
+        },
+        {
+          "name": "peer_group",
+          "type": "VARCHAR",
+          "nulls": 0
+        },
+        {
+          "name": "peer_group_label",
+          "type": "VARCHAR",
+          "nulls": 0
+        },
+        {
+          "name": "peer_group_sort",
+          "type": "INTEGER",
+          "nulls": 0,
+          "sum": 245
+        },
+        {
+          "name": "latest_attendances",
+          "type": "INTEGER",
+          "nulls": 0,
+          "sum": 593177
+        },
+        {
+          "name": "peer_group_quarter",
+          "type": "VARCHAR",
+          "nulls": 0
+        },
+        {
+          "name": "first_quarter",
+          "type": "VARCHAR",
+          "nulls": 0
+        },
+        {
+          "name": "last_quarter",
+          "type": "VARCHAR",
+          "nulls": 0
+        },
+        {
+          "name": "quarters_reported",
+          "type": "INTEGER",
+          "nulls": 0,
+          "sum": 1457
+        }
+      ]
+    },
+    "dim_quarter": {
+      "rows": 14,
+      "columns": [
+        {
+          "name": "quarter_key",
+          "type": "INTEGER",
+          "nulls": 0,
+          "sum": 2834099
+        },
+        {
+          "name": "quarter_code",
+          "type": "VARCHAR",
+          "nulls": 0
+        },
+        {
+          "name": "quarter_label",
+          "type": "VARCHAR",
+          "nulls": 0
+        },
+        {
+          "name": "quarter_name",
+          "type": "VARCHAR",
+          "nulls": 0
+        },
+        {
+          "name": "quarter_start",
+          "type": "DATE",
+          "nulls": 0
+        },
+        {
+          "name": "calendar_year",
+          "type": "INTEGER",
+          "nulls": 0,
+          "sum": 28340
+        },
+        {
+          "name": "quarter_of_year",
+          "type": "INTEGER",
+          "nulls": 0,
+          "sum": 33
+        },
+        {
+          "name": "financial_year",
+          "type": "INTEGER",
+          "nulls": 0,
+          "sum": 28346
+        },
+        {
+          "name": "quarter_index",
+          "type": "INTEGER",
+          "nulls": 0,
+          "sum": 105
+        },
+        {
+          "name": "whole_number_rates",
+          "type": "BOOLEAN",
+          "nulls": 0
+        },
+        {
+          "name": "zero_published_as_dash",
+          "type": "BOOLEAN",
+          "nulls": 0
+        },
+        {
+          "name": "comparison_role",
+          "type": "VARCHAR",
+          "nulls": 12
+        }
+      ]
+    },
+    "dim_triage": {
+      "rows": 5,
+      "columns": [
+        {
+          "name": "triage_key",
+          "type": "INTEGER",
+          "nulls": 0,
+          "sum": 15
+        },
+        {
+          "name": "triage_label",
+          "type": "VARCHAR",
+          "nulls": 0
+        },
+        {
+          "name": "triage_name",
+          "type": "VARCHAR",
+          "nulls": 0
+        },
+        {
+          "name": "recommended_minutes",
+          "type": "INTEGER",
+          "nulls": 0,
+          "sum": 220
+        },
+        {
+          "name": "recommended_wait",
+          "type": "VARCHAR",
+          "nulls": 0
+        },
+        {
+          "name": "urgency_group",
+          "type": "VARCHAR",
+          "nulls": 0
+        }
+      ]
+    },
+    "hospital_scorecard": {
+      "rows": 105,
+      "columns": [
+        {
+          "name": "hospital_key",
+          "type": "BIGINT",
+          "nulls": 0,
+          "sum": 14477
+        },
+        {
+          "name": "comparison_start_quarter",
+          "type": "VARCHAR",
+          "nulls": 0
+        },
+        {
+          "name": "comparison_latest_quarter",
+          "type": "VARCHAR",
+          "nulls": 0
+        },
+        {
+          "name": "stay_4h_pct_latest_published",
+          "type": "DOUBLE",
+          "nulls": 0,
+          "sum": 8312.7
+        },
+        {
+          "name": "same_mix_rate",
+          "type": "DOUBLE",
+          "nulls": 0,
+          "sum": 8327.4459
+        },
+        {
+          "name": "peer_median_same_mix_rate",
+          "type": "DOUBLE",
+          "nulls": 0,
+          "sum": 8272.0634
+        },
+        {
+          "name": "same_mix_vs_peer_median",
+          "type": "DOUBLE",
+          "nulls": 0,
+          "sum": 55.3794
+        },
+        {
+          "name": "level",
+          "type": "VARCHAR",
+          "nulls": 0
+        },
+        {
+          "name": "stay_4h_pct_start_published",
+          "type": "DOUBLE",
+          "nulls": 1,
+          "sum": 8443.3
+        },
+        {
+          "name": "change_points",
+          "type": "DOUBLE",
+          "nulls": 1,
+          "sum": -184.4206
+        },
+        {
+          "name": "triage_mix_effect",
+          "type": "DOUBLE",
+          "nulls": 1,
+          "sum": -64.9498
+        },
+        {
+          "name": "within_category_effect",
+          "type": "DOUBLE",
+          "nulls": 1,
+          "sum": -119.4703
+        },
+        {
+          "name": "chance_bar",
+          "type": "DOUBLE",
+          "nulls": 1,
+          "sum": 251.3391
+        },
+        {
+          "name": "trend",
+          "type": "VARCHAR",
+          "nulls": 0
+        },
+        {
+          "name": "trend_sort",
+          "type": "INTEGER",
+          "nulls": 0,
+          "sum": 189
+        },
+        {
+          "name": "below_peers_and_slipping",
+          "type": "BOOLEAN",
+          "nulls": 0
+        },
+        {
+          "name": "patients_equivalent",
+          "type": "DOUBLE",
+          "nulls": 1,
+          "sum": -13057.252
+        },
+        {
+          "name": "admission_share_effect",
+          "type": "DOUBLE",
+          "nulls": 1,
+          "sum": 0.246
+        },
+        {
+          "name": "admitted_stream_effect",
+          "type": "DOUBLE",
+          "nulls": 1,
+          "sum": -46.5113
+        },
+        {
+          "name": "admitted_stream_trend",
+          "type": "VARCHAR",
+          "nulls": 0
+        },
+        {
+          "name": "admitted_verdict_survives_rounding",
+          "type": "BOOLEAN",
+          "nulls": 65
+        },
+        {
+          "name": "not_admitted_stream_effect",
+          "type": "DOUBLE",
+          "nulls": 1,
+          "sum": -73.2054
+        },
+        {
+          "name": "not_admitted_stream_trend",
+          "type": "VARCHAR",
+          "nulls": 0
+        },
+        {
+          "name": "not_admitted_verdict_survives_rounding",
+          "type": "BOOLEAN",
+          "nulls": 55
+        },
+        {
+          "name": "slipping_pattern",
+          "type": "VARCHAR",
+          "nulls": 0
+        },
+        {
+          "name": "seen_on_time_within_category_effect",
+          "type": "DOUBLE",
+          "nulls": 1,
+          "sum": 68.0647
+        },
+        {
+          "name": "seen_on_time_trend",
+          "type": "VARCHAR",
+          "nulls": 0
+        },
+        {
+          "name": "median_wait_min_start",
+          "type": "BIGINT",
+          "nulls": 1,
+          "sum": 1021
+        },
+        {
+          "name": "median_wait_min_latest",
+          "type": "BIGINT",
+          "nulls": 1,
+          "sum": 1020
+        },
+        {
+          "name": "wait_step",
+          "type": "BOOLEAN",
+          "nulls": 0
+        },
+        {
+          "name": "did_not_wait_trend",
+          "type": "VARCHAR",
+          "nulls": 0
+        },
+        {
+          "name": "left_after_treatment_trend",
+          "type": "VARCHAR",
+          "nulls": 0
+        }
+      ]
+    },
+    "state_published_quarter": {
+      "rows": 14,
+      "columns": [
+        {
+          "name": "quarter_key",
+          "type": "INTEGER",
+          "nulls": 0,
+          "sum": 2834099
+        },
+        {
+          "name": "attendances_published",
+          "type": "INTEGER",
+          "nulls": 0,
+          "sum": 8278441
+        },
+        {
+          "name": "median_wait_min",
+          "type": "DOUBLE",
+          "nulls": 0,
+          "sum": 210.0
+        },
+        {
+          "name": "seen_on_time_pct",
+          "type": "DOUBLE",
+          "nulls": 0,
+          "sum": 1025.4
+        },
+        {
+          "name": "stay_within_4h_pct",
+          "type": "DOUBLE",
+          "nulls": 0,
+          "sum": 826.7
+        },
+        {
+          "name": "admitted_pct",
+          "type": "DOUBLE",
+          "nulls": 0,
+          "sum": 398.9
+        },
+        {
+          "name": "admitted_within_4h_pct",
+          "type": "DOUBLE",
+          "nulls": 0,
+          "sum": 485.2
+        }
+      ]
+    }
+  }
+}
