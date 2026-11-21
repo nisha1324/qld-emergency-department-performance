@@ -38,6 +38,11 @@ def part2_section(readme: str) -> str:
 
 def part3_section(readme: str) -> str:
     start = readme.index("## Part 3")
+    return readme[start:readme.index("## Part 4")]
+
+
+def part4_section(readme: str) -> str:
+    start = readme.index("## Part 4")
     return readme[start:readme.index("## How to run")]
 
 
@@ -204,9 +209,75 @@ def test_part3_large_priority_hospitals_named_in_readme(readme, root):
     assert all(name in sentence for name in large)
 
 
+@pytest.fixture(scope="module")
+def doors_report(root) -> str:
+    return (root / "results" / "FRONT_VS_BACK_DOOR.md").read_text(encoding="utf-8")
+
+
+def test_every_part4_figure_is_in_the_doors_report(readme, doors_report):
+    have = tokens(doors_report)
+    missing = sorted(t for t in tokens(part4_section(readme)) if t not in have and t not in {"3", "4"})
+    assert not missing, f"README figures not found in FRONT_VS_BACK_DOOR.md: {missing}"
+
+
+@pytest.mark.parametrize("readme_phrase, report_phrase", [
+    ("| Queensland | −3.05 | −1.14 | −0.02 | −0.87 | −1.02 |", "| Queensland | 59.1% | 56.1% | −3.05 | −1.14 | −0.02 | −0.87 | −1.02 |"),
+    ("| Large hospitals | −3.47 | −0.60 | −0.15 | −1.07 | −1.65 |",
+     "| Large hospitals | 49.2% | 45.7% | −3.47 | −0.60 | −0.15 | −1.07 | −1.65 |"),
+    ("| Medium hospitals | −1.78 | −1.51 | +0.17 | −0.51 | +0.07 |",
+     "| Medium hospitals | 78.3% | 76.5% | −1.78 | −1.51 | +0.17 | −0.51 | +0.07 |"),
+    ("| Small hospitals | −1.16 | −0.46 | +0.04 | −0.19 | −0.56 |",
+     "| Small hospitals | 92.3% | 91.1% | −1.16 | −0.46 | +0.04 | −0.19 | −0.56 |"),
+    ("from Apr-Jun 2024 to Apr-Jun 2026 is split four ways, with nothing left over",
+     "from Apr-Jun 2024 to Apr-Jun 2026 is split exactly into"),
+    ("It is implied by three published figures", "it is the rate implied by the published stay rate, admitted share and admitted 4-hour rate"),
+    ("Admitted patients are 29.0% of attendances and 45% of the within-category fall",
+     "They are 29.0% of attendances and 45% of the within-category fall"),
+    ("Their 4-hour rate went from 34.4% to 31.3%; the implied rate for everyone else went from 68.8% to 66.2%",
+     "Their own 4-hour rate went from 34.4% to 31.3%; the implied rate for everyone else went from 68.8% to 66.2%"),
+    ("Part 2 put 1.78 points on patients who were not admitted; with triage held fixed it is 1.02",
+     "put 1.78 points on patients who were not admitted and 0.91 on admitted patients. With triage held fixed the "
+     "not-admitted part is 1.02 points"),
+    ("At 15 of the 16 slipping large hospitals, patients who were not admitted left later too",
+     "So the not-admitted stream is slipping at 15 of the 16"),
+    ("11 are slipping in both streams, 4 only among patients who were not admitted (Mackay, Rockhampton, Robina and "
+     "Princess Alexandra) and 1 only among admitted patients (Nambour)",
+     "Of the 16 slipping large hospitals, 11 are slipping in both streams, 4 only among patients who were not admitted "
+     "(Mackay, Rockhampton, Robina and Princess Alexandra) and 1 only among admitted patients (Nambour)"),
+    ("The 4 improving large hospitals all gained most among patients who were not admitted",
+     "**The 4 improving large hospitals all improved among patients who were not admitted**, and at each of them that "
+     "stream is the larger part of the gain"),
+    ("correlation 0.64 across the 22 large hospitals", "(correlation 0.64 across the 22 large hospitals)"),
+    ("did not wait to be seen fell from 3.34% to 2.87%", "the did-not-wait rate fell from 3.34% to 2.87% of attendances"),
+    ("Apr-Jun 2024 was a high point", "Apr-Jun 2024 was higher than the year before it, so the two-year fall starts from a high point"),
+    ("the medium hospitals' fall came mostly in the latest quarter", "most of the fall to 3.49% happened in the latest quarter"),
+    ("The 7 hospitals that slipped on 4-hour stays while improving on patients seen on time all have a shorter median wait, "
+     "and all 7 are slipping among patients who were not admitted",
+     "The median wait is shorter at 7 of the 7, and every one is slipping among patients who were not admitted"),
+    ("In Apr-Jun 2024, 36 hospitals published a median wait of 0 or 1 minute",
+     "In Apr-Jun 2024, 36 hospitals (34 small, 2 medium) published a median wait of 0 or 1 minute"),
+    ("At 9 of them it had risen to 5 minutes or more by Apr-Jun 2026", "At 9 of them the median had risen to 5 minutes or more by Apr-Jun 2026"),
+    ("6 of the 26 hospitals that Part 3 marks as slipping on patients seen on time are in that group",
+     "6 of the 26 hospitals that Part 3 marks as slipping on patients seen on time are in this group"),
+    ("Of the 35 hospitals slipping on 4-hour stays, 32 are slipping among patients who were not admitted and 23 among admitted patients",
+     "Of the 35 hospitals slipping on 4-hour stays, 32 are slipping among patients who were not admitted and 23 among admitted patients"),
+])
+def test_part4_statement_is_backed_by_the_doors_report(readme, doors_report, readme_phrase, report_phrase):
+    assert readme_phrase in part4_section(readme)
+    assert report_phrase in doors_report
+
+
+def test_part4_limitation_about_zero_waits(root):
+    """'published by about a third of hospitals': 36 of 104 in the first quarter compared."""
+    import pandas as pd
+    h = pd.read_csv(root / "results" / "doors_hospitals.csv")
+    assert len(h) == 104 and int((h["median_wait_0"] <= 1).sum()) == 36
+    assert 0.3 < 36 / 104 < 0.37
+
+
 def test_readme_charts_exist(readme, root):
     charts = re.findall(r"\]\((results/charts/[^)]+)\)", readme)
-    assert len(charts) == 9
+    assert len(charts) == 12
     for c in charts:
         assert (root / c).is_file(), c
 

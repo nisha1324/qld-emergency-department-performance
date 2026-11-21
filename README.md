@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/nisha1324/qld-emergency-department-performance/actions/workflows/ci.yml/badge.svg)](https://github.com/nisha1324/qld-emergency-department-performance/actions/workflows/ci.yml)
 
-**Status: work in progress.** Parts 1 to 3 of 5 are done: the source profile, the split between patient mix and performance, and the hospital scorecard.
+**Status: work in progress.** Parts 1 to 4 of 5 are done: the source profile, the split between patient mix and performance, the hospital scorecard, and front door versus back door.
 
 Where do patients wait in Queensland's public hospital emergency departments (EDs), and which hospitals miss the 4-hour mark? This project treats the state's published ED figures the way an operations analyst would treat a service-level report: check the data first, then find where the delays are, how much is down to the mix of patients, and which hospitals to look at.
 
@@ -133,6 +133,37 @@ One medium hospital, Mater Springfield, first reports in Apr-Jun 2026 and has a 
 
 **So what?** A performance report needs two columns per hospital, not one. Comparing everyone with the state figure of 56.1% puts 20 of the 22 large hospitals below it and all 57 small hospitals above it, which says nothing about any of them. Against peers, a health service has a short list to start with (12 below peers and slipping), a second list that a ranking would miss (8 high but slipping), and a reason not to react to most small-hospital swings. The scorecard shows where to look, not why: the chance bar is a floor, and peer medians are not targets.
 
+## Part 4: front door versus back door
+
+Full report: [`results/FRONT_VS_BACK_DOOR.md`](results/FRONT_VS_BACK_DOOR.md). Every hospital's row: [`results/doors_hospitals.csv`](results/doors_hospitals.csv).
+
+Part 3 says which hospitals slipped. This part asks where in the ED the time is lost. Each triage category is cut into two streams, patients who were **admitted** and patients who were **not admitted**, and the change in the 4-hour rate from Apr-Jun 2024 to Apr-Jun 2026 is split four ways, with nothing left over:
+
+| | Change (points) | Triage mix | Admission share | Admitted stream | Not-admitted stream |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Queensland | −3.05 | −1.14 | −0.02 | −0.87 | −1.02 |
+| Large hospitals | −3.47 | −0.60 | −0.15 | −1.07 | −1.65 |
+| Medium hospitals | −1.78 | −1.51 | +0.17 | −0.51 | +0.07 |
+| Small hospitals | −1.16 | −0.46 | +0.04 | −0.19 | −0.56 |
+
+The not-admitted stream's 4-hour rate is not published. It is implied by three published figures, and each stream gets the same chance bar as Part 3.
+
+**1. Both streams are slower, so this is not only a bed problem.** Admitted patients are 29.0% of attendances and 45% of the within-category fall: more than their share, but not most of it. Their 4-hour rate went from 34.4% to 31.3%; the implied rate for everyone else went from 68.8% to 66.2%. Part 2 put 1.78 points on patients who were not admitted; with triage held fixed it is 1.02.
+
+![Four-way split](results/charts/11_four_way_split.png)
+
+**2. At 15 of the 16 slipping large hospitals, patients who were not admitted left later too.** 11 are slipping in both streams, 4 only among patients who were not admitted (Mackay, Rockhampton, Robina and Princess Alexandra) and 1 only among admitted patients (Nambour). The 4 improving large hospitals all gained most among patients who were not admitted. The two streams move together (correlation 0.64 across the 22 large hospitals), which fits crowding slowing everyone as well as it fits two separate problems.
+
+![Streams at the large hospitals](results/charts/10_large_hospital_streams.png)
+
+**3. Statewide, the front door is not where the time is lost.** The share of patients who did not wait to be seen fell from 3.34% to 2.87%, though Apr-Jun 2024 was a high point and the medium hospitals' fall came mostly in the latest quarter. The 7 hospitals that slipped on 4-hour stays while improving on patients seen on time all have a shorter median wait, and all 7 are slipping among patients who were not admitted.
+
+![Did not wait](results/charts/12_did_not_wait.png)
+
+**4. Some front-door figures look like a change in recording.** In Apr-Jun 2024, 36 hospitals published a median wait of 0 or 1 minute. At 9 of them it had risen to 5 minutes or more by Apr-Jun 2026, and 6 of the 26 hospitals that Part 3 marks as slipping on patients seen on time are in that group. Their slip may be measurement, not service; the data cannot confirm either.
+
+**So what?** A hospital executive deciding where to spend should not assume the answer is inpatient beds. Of the 35 hospitals slipping on 4-hour stays, 32 are slipping among patients who were not admitted and 23 among admitted patients. The stream says who to talk to first: bed managers where only the admitted stream slips, the ED's own tests, reviews and discharge decisions where only the not-admitted stream slips, and crowding where both do. It says where the time is lost, not why.
+
 ## How to run
 
 ```bash
@@ -142,6 +173,7 @@ pip install -r requirements.txt
 python scripts/profile_source.py     # Part 1 report, CSVs and charts from the committed snapshot
 python scripts/mix_report.py         # Part 2 report, CSVs and charts
 python scripts/scorecard_report.py   # Part 3 report, CSVs and charts
+python scripts/doors_report.py       # Part 4 report, CSVs and charts
 pytest                               # tests
 
 # optional: rebuild from the source
@@ -157,12 +189,13 @@ edperf/load.py            raw quarterly files -> one tidy table
 edperf/profile.py         measures behind the source profile
 edperf/mix.py             mix versus within-category split
 edperf/scorecard.py       peer groups, same-mix rates, chance bars, level and trend verdicts
-scripts/                  download, snapshot build, Part 1 to Part 3 reports
+edperf/doors.py           admitted and not-admitted streams, four-way split, walk-outs
+scripts/                  download, snapshot build, Part 1 to Part 4 reports
 data/raw/                 14 raw quarterly files as returned by the API
 data/ed_quarterly.csv     tidy snapshot: hospital x quarter x triage category
 data/facility_names.csv   every spelling each facility code has had
-results/                  SOURCE_PROFILE.md, MIX_VS_PERFORMANCE.md, HOSPITAL_SCORECARD.md, CSVs, charts
-tests/                    loader, measures, the split and the scorecard on hand-made numbers, report regeneration, README figures
+results/                  SOURCE_PROFILE.md, MIX_VS_PERFORMANCE.md, HOSPITAL_SCORECARD.md, FRONT_VS_BACK_DOOR.md, CSVs, charts
+tests/                    loader, measures, the splits and the scorecard on hand-made numbers, report regeneration, README figures
 ```
 
 ## Roadmap
@@ -170,7 +203,7 @@ tests/                    loader, measures, the split and the scorecard on hand-
 1. ~~Source, snapshot and profile~~
 2. ~~Mix versus performance: how much of the fall in 4-hour stays is a more urgent mix, and how much is each triage category getting slower~~
 3. ~~Hospital scorecard: peer groups by size, which hospitals are improving or slipping within category, and by how much~~
-4. Front door versus back door: waits, walk-outs and admitted-patient delays by hospital
+4. ~~Front door versus back door: waits, walk-outs and admitted-patient delays by hospital~~
 5. Star-schema export for Power BI, CI and the final write-up with recommendations
 
 ## Limitations
@@ -178,7 +211,9 @@ tests/                    loader, measures, the split and the scorecard on hand-
 - Aggregated data: quarterly percentages and medians per hospital, with no patient-level records, times of day or diagnoses.
 - "Admissions to hospital within 4 hours" is the source's column name. It is read here as the share of admitted patients whose ED stay was within 4 hours; the portal's definitions file could not be downloaded from the machine this was built on.
 - Triage category is the only measure of how sick patients are. A change in triage practice looks the same as a change in patients, so the mix effect in Part 2 is an estimate, not a fact about patients.
-- The 4-hour rate of patients who were not admitted is implied by three published figures, not published itself.
+- The 4-hour rate of patients who were not admitted is implied by three published figures, not published itself. Part 4's chance bar for that stream does not include the rounding of those figures; the report shows which verdicts would not survive the worst case.
+- Part 4's streams say where the time is lost, not why. Admitted patients waiting in the ED for a bed can slow everyone else, and quarterly totals cannot separate that from a separate problem among patients who go home.
+- A median wait of 0 or 1 minute, published by about a third of hospitals, may reflect how the start of treatment is recorded. Front-door changes at hospitals where it jumped are flagged, not explained.
 - "Seen within the recommended time" does not rebuild exactly from its five categories (the rebuilt figure is about 0.3 points higher), so Part 2 uses its changes, not its levels.
 - The three size groups (cut at 2,500 and 10,000 attendances a quarter) are working groups for this analysis, not Queensland Health's official peer groups. A hospital near a cut-off could be scored differently in the next group.
 - No official targets are applied. Queensland Health's targets could not be confirmed from a primary source on the machine this was built on, so Part 3 scores hospitals against the median of their peer group, which describes what similar hospitals do and is not a standard of care.
