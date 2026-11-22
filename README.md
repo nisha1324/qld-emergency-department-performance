@@ -2,9 +2,38 @@
 
 [![CI](https://github.com/nisha1324/qld-emergency-department-performance/actions/workflows/ci.yml/badge.svg)](https://github.com/nisha1324/qld-emergency-department-performance/actions/workflows/ci.yml)
 
-**Status: work in progress.** The analysis (Parts 1 to 4) and the Power BI model (Part 5) are done. The final write-up with recommendations is still to come.
+**Status: complete.** Five parts of analysis and a Power BI model, each with its own report, all regenerated and tested by GitHub Actions on every push. One step is left for a Windows machine: the DAX measures have not yet been run in Power BI.
 
 Where do patients wait in Queensland's public hospital emergency departments (EDs), and which hospitals miss the 4-hour mark? This project treats the state's published ED figures the way an operations analyst would treat a service-level report: check the data first, then find where the delays are, how much is down to the mix of patients, and which hospitals to look at.
+
+## Summary
+
+In Apr-Jun 2026, 56.1% of ED stays in Queensland were within 4 hours, down from 61% in the same quarter of 2023, although patients were being seen sooner (74.6% within the recommended time, up from 71%). Five things explain where that fall sits. Every figure below comes from the part named beside it.
+
+- **A more urgent mix of patients is 37% of the fall, not most of it.** From Apr-Jun 2024 to Apr-Jun 2026 the 4-hour rate fell 3.05 points: 1.14 from the triage mix and 1.91 within category. The rate fell in all five triage categories. *(Part 2)*
+- **It is a large-hospital problem.** 22 hospitals handle 70.2% of attendances, and 16 of those 22 slipped by more than chance could explain: roughly 14,800 more stays over 4 hours in the quarter than their Apr-Jun 2024 category rates would give. Of the 57 small hospitals, 45 show no clear change. *(Parts 1 and 3)*
+- **It is not only a bed problem.** Admitted patients are 29.0% of attendances and 45% of the within-category fall. Of the 35 hospitals slipping on 4-hour stays, 32 are slipping among patients who were not admitted and 23 among admitted patients. *(Part 4)*
+- **Some hospitals went the other way.** 12 improved by more than chance, Queensland Children's the most (+9.0 points within category). None of the 12 is slipping on patients seen on time. *(Part 3)*
+- **Part of the front-door picture may be recording, not service.** At 9 hospitals the published median wait stepped up from 0 or 1 minute to 5 minutes or more. *(Part 4)*
+
+![Large hospitals against the chance bar](results/charts/07_large_hospital_trend.png)
+
+### Recommendations
+
+Ranked by how directly the figures support them. Each one says where to look or how to report; none says why a hospital is slow, which quarterly totals cannot show.
+
+| # | Recommendation | For | Evidence |
+| ---: | --- | --- | --- |
+| 1 | **Start reviews with the 12 hospitals that are below their peers and slipping**, not with the bottom of a league table. The five large ones are Queen Elizabeth II, Hervey Bay, Bundaberg, Royal Brisbane & Women's and Princess Alexandra. The full list is in [`results/scorecard_priority.csv`](results/scorecard_priority.csv). | Health-service executives | Part 3: level and trend are separate verdicts, and another 8 hospitals are in the top quarter of their group and slipping |
+| 2 | **Let the stream decide who is in the room.** Bed managers where only the admitted stream slips, the ED's own tests, reviews and discharge decisions where only the not-admitted stream slips, and crowding where both do. Do not assume the answer is inpatient beds. | Hospital executives, ED directors | Part 4: of the 16 slipping large hospitals, 11 slip in both streams, 4 only among patients who were not admitted and 1 only among admitted patients |
+| 3 | **Compare each hospital with hospitals of its size, in two columns: level and trend.** The state figure is not a benchmark for anyone. | Performance and reporting teams | Part 3: against the state's 56.1%, 20 of the 22 large hospitals are below and all 57 small hospitals are above |
+| 4 | **Report within-category rates next to the headline.** The headline overstates the loss in 4-hour stays and understates the gain in patients seen on time. | Performance and reporting teams | Part 2: 4-hour stays −3.05 points, of which −1.91 within category; seen on time +1.30, of which +1.78 within category |
+| 5 | **Do not act on one small hospital's swing.** Ask first whether the change is outside its chance bar. | Health-service executives, boards | Part 3: a small hospital's chance bar is about ±2.9 points, against ±1.3 for a large one |
+| 6 | **Find out what the improving hospitals changed.** | Clinical leads, improvement teams | Parts 3 and 4: 4 large hospitals improved, all of them most among patients who were not admitted; Caboolture, Gympie and Kingaroy are in the lowest quarter of their group and improving |
+| 7 | **Check how the start of treatment is recorded before judging a front door**, and publish a zero as 0, not as `-`. | Data custodians | Part 4: 6 of the 26 hospitals marked as slipping on patients seen on time are among the 9 whose median wait stepped up. Part 5: reading a blank as "no data" gives the wrong admitted share in 21 of 83 hospital-quarters |
+| 8 | **Give analysts a model built on head counts, not a table of percentages.** | BI and analytics teams | Part 5: the plain average of hospital 4-hour figures is 79.2% for a state at 56.1%; the star schema adds up head counts instead and gives 56.12% against the published 56.1% |
+
+What this analysis cannot do is in [Limitations](#limitations). The three that matter most for a decision: no official targets are applied (hospitals are scored against the median of their size group), the chance bar is a floor and a flag means "worth a look", and the streams show where the time is lost, not why.
 
 ## Why it matters
 
@@ -31,7 +60,7 @@ Not included: the nine earlier quarters (Oct-Dec 2020 to Oct-Dec 2022). The port
 
 Full report: [`results/SOURCE_PROFILE.md`](results/SOURCE_PROFILE.md).
 
-### What the data says so far
+### What the data says
 
 Same quarter, three years apart, all triage categories:
 
@@ -249,7 +278,7 @@ tests/                    loader, measures, the splits, the scorecard and the st
 3. ~~Hospital scorecard: peer groups by size, which hospitals are improving or slipping within category, and by how much~~
 4. ~~Front door versus back door: waits, walk-outs and admitted-patient delays by hospital~~
 5. ~~Star-schema export for Power BI: DuckDB SQL, Parquet, DAX measures, check values and a build guide~~
-6. Final write-up with recommendations
+6. ~~Final write-up with recommendations~~
 
 ## Limitations
 
