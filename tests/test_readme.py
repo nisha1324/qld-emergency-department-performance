@@ -358,7 +358,8 @@ def test_part5_average_trap_and_blank_limitation(readme, snapshot):
 
 def test_readme_charts_exist(readme, root):
     charts = re.findall(r"\]\((results/charts/[^)]+)\)", readme)
-    assert len(charts) == 12
+    # 12 charts; chart 07 is shown twice (in the summary and in Part 3)
+    assert len(set(charts)) == 12 and len(charts) == 13
     for c in charts:
         assert (root / c).is_file(), c
 
@@ -372,3 +373,121 @@ def test_file_sizes_quoted_in_readme(root):
     raw = sum(p.stat().st_size for p in (root / "data" / "raw").glob("*.json"))
     assert round(raw / 1e6, 1) == 1.0
     assert round((root / "data" / "ed_quarterly.csv").stat().st_size / 1e6, 1) == 0.6
+
+
+# ---- Summary and recommendations --------------------------------------------
+
+def summary_section(readme: str) -> str:
+    start = readme.index("## Summary")
+    return readme[start:readme.index("## Why it matters")]
+
+
+def parts_text(readme: str) -> str:
+    """Parts 1 to 5, whose figures the tests above tie to the generated reports."""
+    return readme[readme.index("## Part 1"):readme.index("## How to run")]
+
+
+def test_summary_adds_no_figure_of_its_own(readme):
+    have = tokens(parts_text(readme))
+    # 21 = 83 - 62, checked against CHECKS.md below
+    missing = sorted(t for t in tokens(summary_section(readme)) if t not in have and t != "21")
+    assert not missing, f"summary figures that Parts 1 to 5 do not contain: {missing}"
+
+
+@pytest.mark.parametrize("summary_phrase, part_phrase", [
+    ("56.1% of ED stays in Queensland were within 4 hours, down from 61% in the same quarter of 2023",
+     "| ED stay within 4 hours | 61% | 56.1% |"),
+    ("74.6% within the recommended time, up from 71%", "| Seen within the recommended time | 71% | 74.6% |"),
+    ("A more urgent mix of patients is 37% of the fall", "A more urgent mix is 37% of the fall in 4-hour stays"),
+    ("the 4-hour rate fell 3.05 points: 1.14 from the triage mix and 1.91 within category",
+     "| ED stay within 4 hours | −3.05 | −1.14 | −1.91 |"),
+    ("The rate fell in all five triage categories", "The 4-hour rate fell in all five triage categories"),
+    ("22 hospitals handle 70.2% of attendances",
+     "22 of 105 hospitals had 10,000 or more attendances and handled 70.2% of the total"),
+    ("16 of those 22 slipped by more than chance", "| Large (10,000 or more) | 22 | 44.3% | 16 | 2 | 4 |"),
+    ("roughly 14,800 more stays over 4 hours in the quarter than their Apr-Jun 2024 category rates would give",
+     "At those 16 the falls add up to roughly 14,800 more stays over 4 hours in the quarter than their Apr-Jun 2024 "
+     "category rates would give"),
+    ("Of the 57 small hospitals, 45 show no clear change", "| Small (under 2,500) | 57 | 92.7% | 9 | 45 | 3 |"),
+    ("Admitted patients are 29.0% of attendances and 45% of the within-category fall",
+     "Admitted patients are 29.0% of attendances and 45% of the within-category fall"),
+    ("Of the 35 hospitals slipping on 4-hour stays, 32 are slipping among patients who were not admitted and 23 "
+     "among admitted patients",
+     "Of the 35 hospitals slipping on 4-hour stays, 32 are slipping among patients who were not admitted and 23 "
+     "among admitted patients"),
+    ("12 improved by more than chance, Queensland Children's the most (+9.0 points within category)",
+     "Queensland Children's gained the most (+9.0)"),
+    ("None of the 12 is slipping on patients seen on time",
+     "Of the 12 improving on 4-hour stays, 11 are also improving on patients seen on time and none is slipping"),
+    ("At 9 hospitals the published median wait stepped up from 0 or 1 minute to 5 minutes or more",
+     "36 hospitals published a median wait of 0 or 1 minute. At 9 of them it had risen to 5 minutes or more"),
+    ("another 8 hospitals are in the top quarter of their group and slipping",
+     "Another 8 are in the top quarter of their group and slipping"),
+    ("of the 16 slipping large hospitals, 11 slip in both streams, 4 only among patients who were not admitted "
+     "and 1 only among admitted patients",
+     "11 are slipping in both streams, 4 only among patients who were not admitted (Mackay, Rockhampton, Robina "
+     "and Princess Alexandra) and 1 only among admitted patients (Nambour)"),
+    ("Bed managers where only the admitted stream slips, the ED's own tests, reviews and discharge decisions where "
+     "only the not-admitted stream slips, and crowding where both do",
+     "bed managers where only the admitted stream slips, the ED's own tests, reviews and discharge decisions where "
+     "only the not-admitted stream slips, and crowding where both do"),
+    ("against the state's 56.1%, 20 of the 22 large hospitals are below and all 57 small hospitals are above",
+     "puts 20 of the 22 large hospitals below it and all 57 small hospitals above it"),
+    ("4-hour stays −3.05 points, of which −1.91 within category", "| ED stay within 4 hours | −3.05 | −1.14 | −1.91 |"),
+    ("seen on time +1.30, of which +1.78 within category", "| Seen within the recommended time | +1.30 | −0.48 | +1.78 |"),
+    ("The headline overstates the loss in 4-hour stays and understates the gain in patients seen on time",
+     "the headline understates the gain in patients seen on time and overstates the loss in 4-hour stays"),
+    ("a small hospital's chance bar is about ±2.9 points, against ±1.3 for a large one",
+     "A small hospital's chance bar is about ±2.9 points, against ±1.3 for a large one"),
+    ("4 large hospitals improved, all of them most among patients who were not admitted",
+     "The 4 improving large hospitals all gained most among patients who were not admitted"),
+    ("Caboolture, Gympie and Kingaroy are in the lowest quarter of their group and improving",
+     "3 are in the lowest quarter and improving: Caboolture, Gympie and Kingaroy"),
+    ("6 of the 26 hospitals marked as slipping on patients seen on time are among the 9 whose median wait stepped up",
+     "6 of the 26 hospitals that Part 3 marks as slipping on patients seen on time are in that group"),
+    ("the plain average of hospital 4-hour figures is 79.2% for a state at 56.1%",
+     "the plain average of hospital 4-hour figures is 79.2% for a state at 56.1%"),
+    ("gives 56.12% against the published 56.1%", "the model gives 56.12% in Apr-Jun 2026 against the published 56.1%"),
+])
+def test_summary_statement_is_backed_by_a_part(readme, summary_phrase, part_phrase):
+    assert summary_phrase in summary_section(readme)
+    assert part_phrase in parts_text(readme)
+
+
+def test_summary_priority_list_is_the_scorecards(readme, root):
+    import pandas as pd
+    priority = pd.read_csv(root / "results" / "scorecard_priority.csv")
+    card = pd.read_csv(root / "results" / "scorecard_hospitals.csv")
+    both = card[(card["level"] == "below peers") & (card["trend"] == "slipping")]
+    assert len(priority) == 12 and set(priority["facility_code"]) == set(both["facility_code"])
+    large = priority.loc[priority["peer_group"] == "large", "facility_name"].tolist()
+    names = ", ".join(large[:-1]) + " and " + large[-1]
+    assert "Start reviews with the 12 hospitals that are below their peers and slipping" in summary_section(readme)
+    assert f"The five large ones are {names}." in summary_section(readme)
+    assert "(results/scorecard_priority.csv)" in summary_section(readme)
+
+
+def test_summary_improvers_and_blank_count(readme, root, checks_md):
+    import pandas as pd
+    card = pd.read_csv(root / "results" / "scorecard_hospitals.csv")
+    doors = pd.read_csv(root / "results" / "doors_hospitals.csv")
+    improving = card[card["trend"] == "improving"]
+    assert len(improving) == 12 and (improving["seen_trend"] != "slipping").all()
+    assert ((improving["peer_group"] == "large").sum()) == 4
+    stepped = set(doors.loc[doors["wait_step"] == 1, "facility_code"]) if doors["wait_step"].dtype != bool \
+        else set(doors.loc[doors["wait_step"], "facility_code"])
+    seen_slipping = set(card.loc[card["seen_trend"] == "slipping", "facility_code"])
+    assert (len(stepped), len(seen_slipping), len(stepped & seen_slipping)) == (9, 26, 6)
+    # "the wrong admitted share in 21 of 83 hospital-quarters": dropping the row is right in 62 of 83
+    assert "| no data: drop the row | 62 of 83 |" in checks_md and 83 - 62 == 21
+    assert "gives the wrong admitted share in 21 of 83 hospital-quarters" in summary_section(readme)
+
+
+def test_project_is_marked_complete(readme):
+    assert "**Status: complete.**" in readme and "work in progress" not in readme.lower()
+    roadmap = readme[readme.index("## Roadmap"):readme.index("## Limitations")]
+    steps = re.findall(r"^\d\. (.*)$", roadmap, re.M)
+    assert len(steps) == 6 and all(s.startswith("~~") and s.endswith("~~") for s in steps)
+    # the one open step is stated wherever the Power BI pack is described
+    assert "the DAX measures have not yet been run in Power BI" in readme
+    assert "The DAX measures have not been run in Power BI" in readme
